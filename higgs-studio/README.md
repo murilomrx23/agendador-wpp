@@ -93,22 +93,25 @@ Para **cada copy** da lista, o sistema executa:
 
 ---
 
-## ⚡ Automação (botão GERAR AGORA)
+## ⚡ Como gerar (recomendado: a SKILL)
 
-O botão **GERAR AGORA** do dashboard **copia o comando pronto** para você colar no
-chat do assistente — que executa a geração no Higgsfield via MCP. Por quê não é
-100% um-clique direto da página?
+O jeito mais simples — **sem deploy, sem API key, sem site**. Existe uma skill do
+Claude Code em `.claude/skills/higgs-studio/` que executa a geração no Higgsfield
+via MCP seguindo estes padrões (experts + produtos + motor).
 
-- O Higgsfield **desta configuração** é um **MCP local do Claude Code** (ligado à
-  sessão do chat). Um Artifact publicado só consegue chamar **conectores do
-  claude.ai** (`window.claude.mcp`), não o MCP da sessão.
+**Como usar:** no Claude Code (com este repo aberto e o MCP do Higgsfield
+conectado), invoque **`/higgs-studio`** ou simplesmente peça — ex.:
+> "Higgs Studio: expert Karina, produto PROTAGON, gera essas 3 copies: …"
 
-**Rotas para automação real (um clique gera de fato):**
-1. **Conector claude.ai:** conectar o Higgsfield como *conector* do claude.ai e
-   reconstruir o dash usando a capability `mcp` do Artifact.
-2. **Backend próprio (este repo é um Cloudflare Worker):** um Worker guarda a chave
-   de API do Higgsfield como *secret* e chama a API REST; o dash chama o Worker.
-   Requer a **API key do Higgsfield**.
+A skill lê `config.json`, monta os prompts, gera 1:1 → reframe 9:16/4:5 com as
+referências certas e devolve os links.
+
+### Alternativas (opcionais, mais complexas)
+- **Backend Cloudflare Worker** (`/studio` + `/api/higgs/*`): botão GERAR AGORA na
+  página gera de verdade, sem chat. Requer deploy + API key. Ver `DEPLOY.md`.
+- **Dashboard Artifact** (copiar comando): monta o briefing e você cola no chat.
+  Um Artifact publicado só chama *conectores* do claude.ai, não o MCP da sessão —
+  por isso ele copia o comando em vez de disparar sozinho.
 
 ## ✅ Status de setup
 
