@@ -1,13 +1,13 @@
 # ✍️ Ficha de Briefing — Dia dos Pais 2026 · PROTAGON
 
-> **Status:** RASCUNHO — aguardando confirmação do expert e das copies finais
-> antes de gerar. Motor: Higgsfield (ChatGPT / GPT Image 2).
+> **Status:** PRONTO PARA GERAR — expert definido (LIVRE). Aguardando as copies
+> finais do cliente. Motor: Higgsfield (ChatGPT / GPT Image 2).
 
 ## 1) Seleção de Expert (marque UMA aba)
 - [ ] 1 — WENDELL
 - [ ] 2 — KARINA
 - [ ] 3 — WENDELL E KARINA
-- [ ] 4 — LIVRE  ← _sugerido enquanto não há fotos dos experts arquivadas_
+- [x] 4 — LIVRE ✅ _(selecionado — geração livre, sem rosto fixo)_
 
 ## 2) Produto (identidade visual)
 - Produto: `produtos/protagon`
@@ -18,15 +18,21 @@
 - [x] 9:16 (Stories) — via reframe da versão 1:1
 - [x] 4:5 (Feed Vertical) — via reframe da versão 1:1
 
-## 4) Copies (uma por arte) — SUGESTÕES p/ Dia dos Pais
-> Revise/edite. Cada item gera uma arte (1:1 → 9:16 → 4:5).
+## 4) Copies (uma por arte)
+> ⏳ AGUARDANDO as copies finais do cliente. Cole aqui — uma por bloco.
+> Cada item gera uma arte (1:1 → 9:16 → 4:5).
 
-1. **"Feliz Dia dos Pais"** — homenagem: um pai como protagonista da própria
-   história, tom nobre e aspiracional, leão dourado ao fundo.
-2. **"Ao pai que é referência todos os dias."** — foco em legado e liderança.
-3. **"Pais que constroem protagonistas."** — conexão pai + filho(a).
-4. **"Presenteie quem sempre foi o seu maior exemplo."** — apelo de campanha/oferta.
-5. **"Para o herói que não usa capa — usa coroa."** — leão/realeza + paternidade.
+1. _(aguardando)_
+
+<details>
+<summary>Sugestões de referência (não confirmadas)</summary>
+
+- "Feliz Dia dos Pais" — pai como protagonista, tom nobre, leão dourado ao fundo.
+- "Ao pai que é referência todos os dias." — legado e liderança.
+- "Pais que constroem protagonistas." — conexão pai + filho(a).
+- "Presenteie quem sempre foi o seu maior exemplo." — apelo de oferta.
+- "Para o herói que não usa capa — usa coroa." — leão/realeza + paternidade.
+</details>
 
 ## 5) Observações gerais
 - Paleta obrigatória: azuis profundos + dourado (destaque), branco/preto (apoio).
