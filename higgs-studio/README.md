@@ -3,6 +3,14 @@
 Sistema operado via **Higgsfield (motor ChatGPT / GPT Image 2)** para gerar artes
 em série, com **fidelidade de rosto dos experts** e **identidade visual por produto**.
 
+> ⚙️ **Motor padrão:** `gpt_image_2` (OpenAI GPT Image 2) · **quality: medium** ·
+> **resolução 2K** · ~**3 créditos** por imagem. Formato base **1:1**; **9:16** e
+> **4:5** derivam por outpaint da 1:1.
+>
+> 🖥️ **Dashboard:** abra `higgs-studio/dashboard.html` (ou o link do Artifact) para
+> montar o briefing de forma visual — seleciona expert + produto, cola as copies e
+> gera o comando pronto para o assistente executar.
+
 > **Como funciona na prática:** o acesso ao Higgsfield roda através do assistente
 > (Claude, via MCP). Este repositório é o **arquivo permanente** (a "base de dados")
 > do sistema: fotos dos experts, identidade dos produtos e as fichas de briefing.
