@@ -71,15 +71,17 @@ Copie `briefings/_MODELO-BRIEFING.md`, preencha e envie ao assistente. Nela voc�
 
 Para **cada copy** da lista, o sistema executa:
 
-1. **Gera a versão 1:1** (Feed) no motor ChatGPT (GPT Image 2), anexando:
+1. **Gera a versão 1:1** no motor ChatGPT (GPT Image 2), anexando:
    - fotos do expert selecionado (referência de rosto)
    - assets de identidade do produto (paleta, fonte, referências, logo)
    - a copy correspondente
-2. **Reframe/outpaint** dessa mesma arte para **9:16 (Stories)**
+2. **Reframe/outpaint** dessa mesma arte para:
+   - **9:16 (Stories)**
+   - **4:5 (Feed Vertical)**
 3. Registra os links em `saidas/`
 
-> ⚠️ A **primeira versão gerada é sempre 1:1**; os demais formatos derivam dela
-> por reframe, preservando a mesma composição.
+> ⚠️ A **primeira versão gerada é sempre 1:1**; os demais formatos (9:16 e 4:5)
+> derivam dela por reframe, preservando a mesma composição.
 
 ---
 

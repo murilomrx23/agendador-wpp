@@ -13,12 +13,12 @@
 - Produto: `produtos/________`
 
 ## 3) Formatos de saída
-- [x] 1:1 (Feed) — **sempre gerado primeiro**
+- [x] 1:1 — **sempre gerado primeiro**
 - [x] 9:16 (Stories) — via reframe da versão 1:1
-- [ ] 16:9 (Capa) — opcional
+- [x] 4:5 (Feed Vertical) — via reframe da versão 1:1
 
 ## 4) Copies (uma por arte)
-> Escreva uma copy por linha/bloco. Cada item gera uma arte (1:1 → 9:16).
+> Escreva uma copy por linha/bloco. Cada item gera uma arte (1:1 → 9:16 → 4:5).
 
 1. 
 2. 
@@ -31,6 +31,6 @@
 
 ---
 ### 📤 Resultado (preenchido pelo assistente)
-| # | Copy | 1:1 | 9:16 |
-|---|------|-----|------|
-| 1 |      |     |      |
+| # | Copy | 1:1 | 9:16 | 4:5 |
+|---|------|-----|------|-----|
+| 1 |      |     |      |     |
