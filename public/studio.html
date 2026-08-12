@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Higgs Studio — Gerar</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{
+    --ground:#050B2E; --ground-2:#03081F; --panel:#0B1550; --panel-2:#0E1A5E; --panel-3:#111F6E;
+    --hair:#20306E; --hair-soft:#182456; --ink:#EEF1FF; --muted:#93A0CC; --faint:#66739E;
+    --gold-1:#EBC042; --gold-2:#FFE28E; --good:#43C08A; --bad:#F06A6A; --warn:#EBC042;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    --cond:"Arial Narrow","Helvetica Neue",Helvetica,system-ui,sans-serif;
+    --body:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box} html,body{margin:0}
+  body{background:linear-gradient(180deg,var(--ground),var(--ground-2));color:var(--ink);font-family:var(--body);min-height:100vh;font-size:16px;line-height:1.5}
+  .wrap{max-width:1120px;margin:0 auto;padding:26px 20px 64px}
+  header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding-bottom:20px}
+  h1{font-family:var(--cond);text-transform:uppercase;letter-spacing:.1em;font-size:22px;margin:0}
+  .sub{color:var(--muted);font-size:13px;margin-top:4px}
+  .pill{margin-left:auto;border:1px solid var(--hair);border-radius:999px;padding:8px 13px;font-size:12.5px;color:var(--muted)}
+  .pill b{color:var(--gold-2)}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:820px){.grid{grid-template-columns:1fr}}
+  .card{background:linear-gradient(180deg,var(--panel),var(--panel-2));border:1px solid var(--hair-soft);border-radius:14px;padding:18px;margin-bottom:16px}
+  h2{font-family:var(--cond);text-transform:uppercase;letter-spacing:.08em;font-size:14px;margin:0 0 12px}
+  .experts{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+  @media(max-width:560px){.experts{grid-template-columns:repeat(2,1fr)}}
+  .opt{position:relative;display:block;cursor:pointer}
+  .opt input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+  .opt .box{display:flex;flex-direction:column;gap:2px;border:1px solid var(--hair);border-radius:10px;padding:11px;background:rgba(255,255,255,.02);height:100%}
+  .opt .k{font-family:var(--cond);text-transform:uppercase;letter-spacing:.05em;font-weight:700;font-size:13px}
+  .opt .d{color:var(--muted);font-size:11px}
+  .opt input:checked + .box{border-color:var(--gold-1);background:linear-gradient(180deg,rgba(235,192,66,.13),rgba(235,192,66,.03))}
+  .opt input:focus-visible + .box{outline:2px solid var(--gold-2);outline-offset:2px}
+  select,textarea{width:100%;background:var(--ground-2);color:var(--ink);border:1px solid var(--hair);border-radius:10px;padding:11px;font:inherit}
+  select{cursor:pointer} textarea{min-height:150px;font-family:var(--mono);font-size:13px;line-height:1.6;resize:vertical}
+  select:focus-visible,textarea:focus-visible{outline:2px solid var(--gold-2);outline-offset:1px}
+  .swatches{display:flex;gap:6px;margin-top:10px} .sw{width:20px;height:20px;border-radius:5px;border:1px solid rgba(255,255,255,.14)}
+  .chips{display:flex;gap:8px;flex-wrap:wrap} .chip{position:relative;cursor:pointer}
+  .chip input{position:absolute;opacity:0;inset:0;cursor:pointer}
+  .chip .c{border:1px solid var(--hair);border-radius:9px;padding:8px 13px;font-size:13px;background:rgba(255,255,255,.02)}
+  .chip input:checked + .c{border-color:var(--gold-1);background:linear-gradient(180deg,rgba(235,192,66,.13),rgba(235,192,66,.03))}
+  .chip.locked .c{opacity:.9}
+  label.fld{display:block;font-size:12px;color:var(--faint);text-transform:uppercase;letter-spacing:.06em;margin:0 0 7px}
+  .gen{width:100%;margin-top:6px;padding:16px;border:none;border-radius:12px;font:inherit;font-weight:700;font-size:16px;cursor:pointer;background:linear-gradient(180deg,var(--gold-2),var(--gold-1));color:#2A1E00}
+  .gen:disabled{opacity:.6;cursor:default}
+  .gen:focus-visible{outline:2px solid var(--gold-2);outline-offset:2px}
+  .note{color:var(--faint);font-size:11.5px;margin-top:10px;line-height:1.5}
+  .banner{border-radius:10px;padding:11px 13px;font-size:13px;margin-bottom:14px;display:none}
+  .banner.err{display:block;background:rgba(240,106,106,.12);border:1px solid var(--bad);color:#ffd9d9}
+  .banner.ok{display:block;background:rgba(67,192,138,.12);border:1px solid var(--good);color:#d6f7e8}
+  .results{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:6px}
+  .r{border:1px solid var(--hair-soft);border-radius:10px;overflow:hidden;background:var(--ground-2);font-size:12px}
+  .r .top{display:flex;justify-content:space-between;padding:7px 9px;color:var(--muted)}
+  .r .st{font-family:var(--mono);font-size:11px}
+  .r .st.done{color:var(--good)} .r .st.fail{color:var(--bad)} .r .st.run{color:var(--warn)}
+  .r img{width:100%;display:block;aspect-ratio:1;object-fit:cover;background:#0a0f2e}
+  .r a{display:block;padding:8px 9px;color:var(--gold-2);text-decoration:none}
+  .r .msg{padding:8px 9px;color:#ffb4b4;font-family:var(--mono);font-size:10.5px;word-break:break-word}
+  .spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.25);border-top-color:var(--gold-2);border-radius:50%;animation:sp .7s linear infinite;vertical-align:-2px}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1>🦁 Higgs Studio</h1><div class="sub">Geração em massa — via API do Higgsfield</div></div>
+    <div class="pill" id="enginePill">motor…</div>
+  </header>
+
+  <div id="banner" class="banner"></div>
+
+  <div class="grid">
+    <div>
+      <section class="card">
+        <h2>1 · Expert</h2>
+        <div class="experts" id="experts"></div>
+      </section>
+      <section class="card">
+        <h2>2 · Produto</h2>
+        <select id="product"></select>
+        <div class="swatches" id="swatches"></div>
+      </section>
+      <section class="card">
+        <h2>3 · Formatos</h2>
+        <div class="chips" id="formats">
+          <label class="chip locked"><input type="checkbox" value="1:1" checked disabled><span class="c">1:1 · base</span></label>
+          <label class="chip"><input type="checkbox" value="9:16" checked><span class="c">9:16 · Stories</span></label>
+          <label class="chip"><input type="checkbox" value="4:5" checked><span class="c">4:5 · Feed</span></label>
+        </div>
+      </section>
+    </div>
+    <div>
+      <section class="card">
+        <h2>4 · Copies</h2>
+        <label class="fld" for="copies">uma copy por bloco (linha em branco separa)</label>
+        <textarea id="copies" spellcheck="false" placeholder="PAI: PRESENÇA QUE MARCA PARA SEMPRE. 💙&#10;Neste Dia dos Pais...&#10;Feliz Dia dos Pais!&#10;&#10;O MELHOR PRESENTE É TER VOCÊ POR PERTO. 💙&#10;..."></textarea>
+        <button class="gen" id="gen">⚡ GERAR AGORA</button>
+        <div class="note" id="est">—</div>
+      </section>
+      <section class="card">
+        <h2>Resultados</h2>
+        <div class="results" id="results"><div class="note">Os resultados aparecem aqui conforme ficam prontos.</div></div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var $=function(s){return document.querySelector(s)};
+  var CFG=null, POLL=null;
+  function banner(msg,kind){var b=$('#banner');b.className='banner '+(kind||'err');b.textContent=msg;}
+  function clearBanner(){$('#banner').className='banner';}
+
+  function selExpert(){var e=document.querySelector('input[name=expert]:checked');return e?e.value:'LIVRE';}
+  function selFormats(){var o=['1:1'];document.querySelectorAll('#formats input:not([disabled])').forEach(function(i){if(i.checked)o.push(i.value)});return o;}
+  function parseCopies(){var raw=$('#copies').value.replace(/\r/g,'').trim();return raw?raw.split(/\n\s*\n/).map(function(b){return b.trim()}).filter(Boolean):[];}
+
+  function renderConfig(c){
+    CFG=c;
+    $('#enginePill').innerHTML='Motor <b>'+c.engine.model+'</b> · '+c.engine.quality+' · '+c.engine.resolution;
+    // experts
+    var ex=$('#experts'); ex.innerHTML='';
+    var order=['WENDELL','KARINA','WENDELL E KARINA','LIVRE'];
+    order.forEach(function(k,idx){
+      var e=c.experts[k]; if(!e)return;
+      var refs=e.refs>0?('✓ '+e.refs+' fotos'):'sem rosto';
+      var checked=k==='LIVRE'?'checked':'';
+      ex.insertAdjacentHTML('beforeend',
+        '<label class="opt"><input type="radio" name="expert" value="'+k+'" '+checked+'><span class="box"><span class="k">'+e.label+'</span><span class="d">'+refs+'</span></span></label>');
+    });
+    // products
+    var ps=$('#product'); ps.innerHTML='';
+    Object.keys(c.products).forEach(function(k){var p=c.products[k];ps.insertAdjacentHTML('beforeend','<option value="'+k+'">'+p.label+'</option>')});
+    renderProduct(); est();
+    ps.addEventListener('change',renderProduct);
+    document.addEventListener('input',est); document.addEventListener('change',est);
+  }
+  function renderProduct(){
+    var p=CFG.products[$('#product').value]; if(!p)return;
+    $('#swatches').innerHTML=(p.colors||[]).map(function(c){return '<span class="sw" style="background:'+c+'"></span>'}).join('');
+  }
+  function est(){
+    var n=parseCopies().length*selFormats().length;
+    $('#est').textContent=n?('≈ '+n+' imagens nesta rodada'):'cole as copies para gerar';
+  }
+
+  function card(copy,format){
+    var id='r'+copy+'_'+format.replace(':','');
+    return '<div class="r" id="'+id+'"><div class="top"><span>#'+copy+' · '+format+'</span><span class="st run" id="st_'+id+'"><span class="spin"></span></span></div><div class="body" id="bd_'+id+'"></div></div>';
+  }
+
+  async function generate(){
+    clearBanner();
+    var copies=parseCopies();
+    if(!copies.length){banner('Cole ao menos uma copy.','err');return;}
+    var body={expert:selExpert(),product:$('#product').value,formats:selFormats(),copies:copies};
+    var btn=$('#gen'); btn.disabled=true; var old=btn.innerHTML; btn.innerHTML='<span class="spin"></span> Enviando...';
+    // build result skeleton
+    var res=$('#results'); res.innerHTML='';
+    copies.forEach(function(_,i){selFormats().forEach(function(f){res.insertAdjacentHTML('beforeend',card(i+1,f))})});
+    try{
+      var r=await fetch('/api/higgs/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+      var data=await r.json();
+      if(!r.ok){banner(data.error||('Erro '+r.status),'err');resetBtn();return;}
+      var idmap={}; var ids=[];
+      data.jobs.forEach(function(j){
+        var rid='r'+j.copy+'_'+j.format.replace(':','');
+        if(j.error){ setStatus(rid,'fail'); $('#bd_'+rid).innerHTML='<div class="msg">'+j.error+'</div>'; }
+        else if(j.id){ idmap[j.id]=rid; ids.push(j.id); }
+      });
+      banner('Jobs enviados ('+ids.length+'). Aguardando o Higgsfield…','ok');
+      if(ids.length) poll(ids,idmap);
+    }catch(e){ banner('Falha de rede: '+e.message,'err'); }
+    resetBtn();
+    function resetBtn(){btn.disabled=false;btn.innerHTML=old;}
+  }
+  function setStatus(rid,kind){var el=$('#st_'+rid);if(!el)return;el.className='st '+kind;el.textContent=kind==='done'?'✓':kind==='fail'?'erro':'gerando';}
+
+  function poll(ids,idmap){
+    if(POLL)clearInterval(POLL);
+    var pending=new Set(ids);
+    async function tick(){
+      if(!pending.size){clearInterval(POLL);return;}
+      try{
+        var r=await fetch('/api/higgs/status?ids='+Array.from(pending).join(','));
+        var data=await r.json();
+        Object.keys(data.jobs||{}).forEach(function(id){
+          var j=data.jobs[id], rid=idmap[id];
+          if(j.status==='completed'){pending.delete(id);setStatus(rid,'done');
+            $('#bd_'+rid).innerHTML=(j.url?'<img src="'+j.url+'" alt=""><a href="'+j.url+'" target="_blank" rel="noopener">abrir imagem ↗</a>':'<div class="msg">pronto, sem URL</div>');}
+          else if(j.status==='failed'||j.status==='nsfw'){pending.delete(id);setStatus(rid,'fail');$('#bd_'+rid).innerHTML='<div class="msg">'+(j.status)+(j.error?': '+j.error:'')+'</div>';}
+        });
+      }catch(e){/* mantém tentando */}
+    }
+    POLL=setInterval(tick,4000); tick();
+  }
+
+  $('#gen').addEventListener('click',generate);
+
+  fetch('/api/higgs/config').then(function(r){return r.json()}).then(renderConfig).catch(function(e){banner('Não consegui carregar a config: '+e.message,'err')});
+})();
+</script>
+</body>
+</html>

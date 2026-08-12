@@ -8,6 +8,7 @@
  * @license MIT
  */
 import { Env, ChatMessage } from "./types";
+import { higgsGenerate, higgsStatus, higgsConfig } from "./higgs/handler";
 
 // Model ID for Workers AI model
 // https://developers.cloudflare.com/workers-ai/models/
@@ -42,6 +43,17 @@ export default {
 
 			// Method not allowed for other request types
 			return new Response("Method not allowed", { status: 405 });
+		}
+
+		// Higgs Studio — geração de artes via API do Higgsfield
+		if (url.pathname === "/api/higgs/generate" && request.method === "POST") {
+			return higgsGenerate(request, env);
+		}
+		if (url.pathname === "/api/higgs/status" && request.method === "GET") {
+			return higgsStatus(request, env);
+		}
+		if (url.pathname === "/api/higgs/config" && request.method === "GET") {
+			return higgsConfig();
 		}
 
 		// Handle 404 for unmatched routes

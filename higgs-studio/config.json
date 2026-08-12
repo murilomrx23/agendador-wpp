@@ -1,0 +1,57 @@
+{
+  "engine": {
+    "model": "gpt_image_2",
+    "model_fallback": "soul",
+    "quality": "medium",
+    "resolution": "2k",
+    "formats": { "base": "1:1", "derived": ["9:16", "4:5"] },
+    "note": "gpt_image_2 pode ser exclusivo do MCP/app; se a API REST nao expor, usar model_fallback (soul). Confirmar no painel de API da conta."
+  },
+  "experts": {
+    "LIVRE": { "label": "Livre", "refs": [] },
+    "WENDELL": {
+      "label": "Wendell Carvalho",
+      "desc": "homem ~40 anos, pele morena clara, cabelo escuro curto, barba cheia escura grisalha, sobrancelhas fortes, sorriso caloroso",
+      "refs": [
+        { "url": "https://lh3.googleusercontent.com/d/1f3zFhwufxa_Y8_6NUPCDVM6K1sDSznzi", "media_id": "927ec575-d9b9-432b-9ab1-0166703bb6cd" },
+        { "url": "https://lh3.googleusercontent.com/d/17fh4SLAXSN6YILn4LwayhfO_bI3EZnCP", "media_id": "b8bc2950-48ec-41f0-a372-4f7ecf04deb7" },
+        { "url": "https://lh3.googleusercontent.com/d/19wauqiB6WDFWt8a86GTgnYz5QTDgiTvW", "media_id": "c836e109-1eb3-42a4-9628-a2dcb773630c" }
+      ]
+    },
+    "KARINA": {
+      "label": "Karina",
+      "desc": "mulher ~40 anos, pele morena, cabelo castanho longo ondulado com mechas mais claras nas pontas, sorriso caloroso, elegante",
+      "refs": [
+        { "url": "https://lh3.googleusercontent.com/d/1kR0q6tk3ULmjAbt-Sj8LyNs88BMUbjJW", "media_id": "36922a09-f6e7-402f-9e18-a9d41cdc5d73" },
+        { "url": "https://lh3.googleusercontent.com/d/1_hSMiXmtwRHkX8Si5174igK14Rs9sVO8", "media_id": "35fd848c-1151-4fa7-a3f7-46f6ecba67ea" },
+        { "url": "https://lh3.googleusercontent.com/d/1tz7UODk3JqyYZoIME7TRSGCkXMILRuEN", "media_id": "defa168b-a816-4557-a68d-0dbee1a06905" }
+      ]
+    },
+    "WENDELL E KARINA": {
+      "label": "Wendell + Karina",
+      "desc": "o casal: Wendell (barba cheia escura) e Karina (cabelo castanho longo ondulado), lado a lado, equilibrados",
+      "refs": [
+        { "url": "https://lh3.googleusercontent.com/d/1boEg6TX2pcOFEZZQk6_aYs_Yq9jY7MDN", "media_id": "e33304c9-319d-487a-8036-ccc642a43176" },
+        { "url": "https://lh3.googleusercontent.com/d/1UKXo4ohQDid060-be4JYeFp5pOyzMZ5b", "media_id": "2b500d57-5264-45f0-8d3f-9762c79b7ff0" }
+      ]
+    }
+  },
+  "products": {
+    "PROTAGON": {
+      "label": "PROTAGON — NOVO PROTAGON",
+      "logo": { "url": "https://lh3.googleusercontent.com/d/1Rv_3fUT6HKZPS-8CigSZb-ff37iUcND5", "media_id": "68866187-005c-41c6-aa47-2541b701c5b0" },
+      "colors": ["#050B2E", "#031749", "#002A90", "#EBC042", "#FFE28E", "#FFFFFF"],
+      "tone": "sobrio, premium e aspiracional",
+      "style": "fundo azul-marinho profundo (degrade #050B2E->#031749), destaques dourados (#EBC042->#FFE28E), tipografia forte em caixa alta, muito contraste, visual limpo e imponente; simbolo do leao NOVO PROTAGON em branco/dourado",
+      "avoid": "cores fora da paleta (nada de verde/rosa/pastel); visual poluido; alterar o leao oficial"
+    },
+    "ISD": {
+      "label": "ISD — Imersão Sprint Digital",
+      "logo": { "url": "https://lh3.googleusercontent.com/d/1GOPQXOyBJTuweU5-zHSY8setntvZzOuN", "media_id": "f062fc48-e611-43e7-a36f-05e6e718638d" },
+      "colors": ["#000000", "#FD7400", "#8A8B90", "#E6E7EA", "#FFFFFF"],
+      "tone": "alta energia, velocidade, urgencia, digital/marketing",
+      "style": "fundo preto, destaques laranja de pista (#FD7400), tipografia pesada em caixa alta com efeito metalico/cromado, sensacao de velocidade/movimento, energetico; logo IMERSAO SPRINT DIGITAL (pista + cifrao)",
+      "avoid": "azul/dourado (isso e do PROTAGON); perder o efeito metalico da tipografia; cores fora da paleta"
+    }
+  }
+}

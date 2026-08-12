@@ -1,0 +1,13 @@
+# Higgs Studio — credenciais da API do Higgsfield (LOCAL DEV)
+# Copie para .dev.vars (que é ignorado pelo git) e preencha com sua chave.
+# Em produção use SECRETS do Worker (ver higgs-studio/DEPLOY.md), nunca este arquivo.
+
+# "ID da chave da API" -> header hf-api-key
+HIGGSFIELD_API_KEY=
+# "Segredo da chave da API" -> header hf-secret
+HIGGSFIELD_API_SECRET=
+
+# Opcionais (só se a doc oficial indicar valores diferentes):
+# HIGGSFIELD_API_BASE=https://platform.higgsfield.ai
+# HIGGSFIELD_PATH_IMAGE=/v1/text2image/{model}
+# HIGGSFIELD_PATH_JOBSET=/v1/job-sets/{id}
