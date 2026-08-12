@@ -104,5 +104,6 @@ Para **cada copy** da lista, o sistema executa:
 | Produto | Paleta | Logo | Tipografia | Referências |
 |---------|--------|------|------------|-------------|
 | **PROTAGON** (`produtos/protagon`) | ✅ | ✅ | ⬜ | ⬜ |
+| **ISD** — Imersão Sprint Digital (`produtos/isd`) | ⬜ (cores do logo) | ✅ | ⬜ | ⬜ |
 
 _Envie os assets ao assistente e ele salva/organiza aqui automaticamente._

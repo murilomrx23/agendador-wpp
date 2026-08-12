@@ -70,23 +70,24 @@
   /* expert cards */
   .experts{display:grid; grid-template-columns:repeat(4,1fr); gap:10px}
   @media (max-width:560px){ .experts{grid-template-columns:repeat(2,1fr)} }
-  .opt{position:relative; cursor:pointer}
-  .opt input{position:absolute; opacity:0; inset:0; cursor:pointer}
+  .opt{position:relative; cursor:pointer; display:block}
+  .opt input{position:absolute; opacity:0; inset:0; cursor:pointer; margin:0}
   .opt .box{
+    display:flex; flex-direction:column; gap:3px;
     border:1px solid var(--hair); border-radius:11px; padding:13px 12px; height:100%;
     background:rgba(255,255,255,.02); transition:border-color .15s, background .15s, transform .1s;
   }
-  .opt .k{font-family:var(--cond); text-transform:uppercase; letter-spacing:.06em; font-weight:700; font-size:14px}
-  .opt .d{color:var(--muted); font-size:11.5px; margin-top:3px; line-height:1.35}
+  .opt .k{display:block; font-family:var(--cond); text-transform:uppercase; letter-spacing:.06em; font-weight:700; font-size:14px}
+  .opt .d{display:block; color:var(--muted); font-size:11.5px; line-height:1.35}
   .opt input:focus-visible + .box{outline:2px solid var(--gold-2); outline-offset:2px}
   .opt input:checked + .box{
     border-color:var(--gold-1);
     background:linear-gradient(180deg, rgba(235,192,66,.14), rgba(235,192,66,.04));
     box-shadow:0 0 0 1px var(--gold-1) inset;
   }
-  .opt .tag{position:absolute; top:9px; right:9px; font-size:10px; color:var(--gold-2); opacity:0; transition:.15s}
+  .opt .tag{position:absolute; top:9px; right:9px; font-size:10px; color:var(--gold-2); opacity:0; transition:.15s; z-index:1}
   .opt input:checked + .box .tag{opacity:1}
-  .opt .warnnote{color:var(--faint); font-size:10.5px; margin-top:6px}
+  .opt .warnnote{display:block; color:var(--faint); font-size:10.5px; margin-top:4px}
 
   /* product */
   .prodrow{display:flex; gap:14px; align-items:center; flex-wrap:wrap}
@@ -99,7 +100,9 @@
   select:focus-visible{outline:2px solid var(--gold-2); outline-offset:2px}
   .swatches{display:flex; gap:6px; align-items:center}
   .sw{width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.14)}
-  .assets{display:flex; gap:8px; flex-wrap:wrap; margin-top:14px}
+  .prodtone{color:var(--muted); font-size:12.5px; margin-top:12px; line-height:1.45}
+  .prodtone b{color:var(--ink); font-weight:600}
+  .assets{display:flex; gap:8px; flex-wrap:wrap; margin-top:12px}
   .asset{font-size:11.5px; color:var(--muted); border:1px solid var(--hair-soft); border-radius:999px; padding:5px 11px; display:flex; gap:6px; align-items:center}
   .asset.ok::before{content:"✓"; color:var(--good); font-weight:700}
   .asset.no::before{content:"○"; color:var(--faint)}
@@ -204,21 +207,12 @@
         <div class="prodrow">
           <select id="product">
             <option value="PROTAGON">PROTAGON — NOVO PROTAGON</option>
+            <option value="ISD">ISD — Imersão Sprint Digital</option>
           </select>
-          <div class="swatches" title="Paleta PROTAGON">
-            <span class="sw" style="background:#050B2E"></span>
-            <span class="sw" style="background:#031749"></span>
-            <span class="sw" style="background:#002A90"></span>
-            <span class="sw" style="background:#EBC042"></span>
-            <span class="sw" style="background:#FFE28E"></span>
-          </div>
+          <div class="swatches" id="swatches" title="Paleta do produto"></div>
         </div>
-        <div class="assets">
-          <span class="asset ok">Paleta</span>
-          <span class="asset ok">Logo (leão)</span>
-          <span class="asset no">Tipografia</span>
-          <span class="asset no">Referências</span>
-        </div>
+        <div class="prodtone" id="prodtone"></div>
+        <div class="assets" id="assets"></div>
       </section>
 
       <section class="card">
@@ -271,6 +265,26 @@
 (function(){
   var $=function(s){return document.querySelector(s)};
   var creditPerImg=3;
+  var PRODUCTS={
+    PROTAGON:{
+      name:'PROTAGON — NOVO PROTAGON',
+      colors:['#050B2E','#031749','#002A90','#EBC042','#FFE28E'],
+      tone:'Sóbrio, premium e aspiracional. Azul-marinho + dourado, tipografia forte, leão.',
+      assets:[['Paleta',1],['Logo (leão)',1],['Tipografia',0],['Referências',0]]
+    },
+    ISD:{
+      name:'ISD — Imersão Sprint Digital',
+      colors:['#000000','#FD7400','#8A8B90','#E6E7EA','#FFFFFF'],
+      tone:'Alta energia e velocidade. Preto + laranja de pista + tipografia metálica/cromada.',
+      assets:[['Paleta',0],['Logo (pista)',1],['Tipografia',0],['Referências',0]]
+    }
+  };
+  function renderProduct(){
+    var p=PRODUCTS[$('#product').value]||PRODUCTS.PROTAGON;
+    $('#swatches').innerHTML=p.colors.map(function(c){return '<span class="sw" style="background:'+c+'"></span>'}).join('');
+    $('#prodtone').innerHTML='<b>Tom:</b> '+p.tone;
+    $('#assets').innerHTML=p.assets.map(function(a){return '<span class="asset '+(a[1]?'ok':'no')+'">'+a[0]+'</span>'}).join('');
+  }
   function selectedExpert(){var e=document.querySelector('input[name=expert]:checked');return e?e.value:'LIVRE';}
   function selectedFormats(){
     var out=['1:1'];
@@ -283,11 +297,12 @@
     return raw.split(/\n\s*\n/).map(function(b){return b.trim().replace(/\n+/g,' / ')}).filter(Boolean);
   }
   function buildCommand(){
-    var expert=selectedExpert(), product=$('#product').value;
+    var expert=selectedExpert(), pkey=$('#product').value;
+    var product=(PRODUCTS[pkey]||{}).name||pkey;
     var fmts=selectedFormats(), copies=parseCopies();
     var derived=fmts.filter(function(f){return f!=='1:1'});
     var L=[];
-    L.push('🦁 HIGGS STUDIO — GERAR ARTES');
+    L.push('🎨 HIGGS STUDIO — GERAR ARTES');
     L.push('Expert: '+expert);
     L.push('Produto: '+product);
     L.push('Motor: GPT Image 2 · quality medium · 2K (padrão)');
@@ -299,6 +314,7 @@
     return L.join('\n');
   }
   function update(){
+    renderProduct();
     var copies=parseCopies(), fmts=selectedFormats();
     var artes=copies.length*fmts.length;
     var cred=artes*creditPerImg;
