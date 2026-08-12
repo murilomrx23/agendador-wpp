@@ -88,6 +88,7 @@
   .opt .tag{position:absolute; top:9px; right:9px; font-size:10px; color:var(--gold-2); opacity:0; transition:.15s; z-index:1}
   .opt input:checked + .box .tag{opacity:1}
   .opt .warnnote{display:block; color:var(--faint); font-size:10.5px; margin-top:4px}
+  .opt .warnnote.rdy{color:var(--good)}
 
   /* product */
   .prodrow{display:flex; gap:14px; align-items:center; flex-wrap:wrap}
@@ -154,7 +155,10 @@
     font-family:var(--mono); font-size:12.5px; line-height:1.65; color:#DCE3FF; white-space:pre-wrap; word-break:break-word;
     max-height:340px; overflow:auto;
   }
-  .btns{display:flex; gap:10px; margin-top:14px}
+  .act.big{width:100%; margin-top:14px; padding:16px; font-size:16px; letter-spacing:.02em}
+  .act.big .spin{display:inline-block; width:14px; height:14px; border:2px solid rgba(42,30,0,.35); border-top-color:#2A1E00; border-radius:50%; animation:spin .7s linear infinite; margin-right:2px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .btns{display:flex; gap:10px; margin-top:10px}
   button.act{
     flex:1; cursor:pointer; border:none; border-radius:11px; padding:13px 14px; font:inherit; font-weight:600; font-size:14px;
     display:flex; align-items:center; justify-content:center; gap:8px; transition:transform .1s, filter .15s;
@@ -195,10 +199,10 @@
       <section class="card">
         <div class="step-h"><span class="step-n">1</span><h2>Expert</h2><span class="hint">rosto de referência</span></div>
         <div class="experts" id="experts">
-          <label class="opt"><input type="radio" name="expert" value="WENDELL"><span class="box"><span class="tag">● sel</span><span class="k">Wendell</span><span class="d">Fotos do Wendell</span><span class="warnnote">sem fotos ainda</span></span></label>
-          <label class="opt"><input type="radio" name="expert" value="KARINA"><span class="box"><span class="tag">● sel</span><span class="k">Karina</span><span class="d">Fotos da Karina</span><span class="warnnote">sem fotos ainda</span></span></label>
-          <label class="opt"><input type="radio" name="expert" value="WENDELL E KARINA"><span class="box"><span class="tag">● sel</span><span class="k">Ambos</span><span class="d">Wendell + Karina</span><span class="warnnote">sem fotos ainda</span></span></label>
-          <label class="opt"><input type="radio" name="expert" value="LIVRE" checked><span class="box"><span class="tag">● sel</span><span class="k">Livre</span><span class="d">Sem rosto fixo</span><span class="warnnote">pronto p/ usar</span></span></label>
+          <label class="opt"><input type="radio" name="expert" value="WENDELL"><span class="box"><span class="tag">● sel</span><span class="k">Wendell</span><span class="d">Wendell Carvalho</span><span class="warnnote rdy">✓ 3 fotos</span></span></label>
+          <label class="opt"><input type="radio" name="expert" value="KARINA"><span class="box"><span class="tag">● sel</span><span class="k">Karina</span><span class="d">Karina</span><span class="warnnote rdy">✓ 3 fotos</span></span></label>
+          <label class="opt"><input type="radio" name="expert" value="WENDELL E KARINA"><span class="box"><span class="tag">● sel</span><span class="k">Ambos</span><span class="d">Wendell + Karina</span><span class="warnnote rdy">✓ fotos do casal</span></span></label>
+          <label class="opt"><input type="radio" name="expert" value="LIVRE" checked><span class="box"><span class="tag">● sel</span><span class="k">Livre</span><span class="d">Sem rosto fixo</span><span class="warnnote rdy">✓ pronto</span></span></label>
         </div>
       </section>
 
@@ -249,11 +253,12 @@
           <span class="st"><span class="dot" id="stdot"></span> <span id="ststatus">aguardando copies</span></span>
         </div>
         <pre class="out" id="preview"></pre>
+        <button class="act primary big" id="gerar">⚡ GERAR AGORA</button>
         <div class="btns">
-          <button class="act primary" id="copyCmd">⧉ Copiar comando</button>
+          <button class="act ghost" id="copyCmd">⧉ Copiar comando</button>
           <button class="act ghost" id="copyMd">Copiar .md</button>
         </div>
-        <div class="flow"><b>Como usar:</b> monte aqui, clique <b>Copiar comando</b> e cole no chat do assistente. Ele executa a geração no Higgsfield (1:1 → reframe 9:16 / 4:5) e devolve os links.</div>
+        <div class="flow"><b>Como funciona:</b> o <b>GERAR AGORA</b> copia o comando pronto — cole no chat do assistente e a geração roda no Higgsfield via MCP (1:1 → reframe 9:16 / 4:5), com os links de volta. <i>A página hospedada não acessa o MCP do chat diretamente; automação 100% um-clique exige backend próprio (ver README).</i></div>
       </section>
     </div>
   </div>
@@ -344,6 +349,14 @@
   document.addEventListener('change',update);
   $('#copyCmd').addEventListener('click',function(){copy(buildCommand(),'Comando copiado ✓')});
   $('#copyMd').addEventListener('click',function(){copy(buildMd(),'Briefing .md copiado ✓')});
+  $('#gerar').addEventListener('click',function(){
+    var b=this;
+    if(!parseCopies().length){toast('Cole as copies primeiro ⚠');$('#copies').focus();return;}
+    copy(buildCommand(),'✓ Comando copiado — cole no chat p/ gerar');
+    var html=b.innerHTML; b.innerHTML='<span class="spin"></span> Comando pronto — cole no chat';
+    b.disabled=true;
+    setTimeout(function(){b.innerHTML=html;b.disabled=false;},2600);
+  });
   update();
 })();
 </script>

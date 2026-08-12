@@ -93,12 +93,30 @@ Para **cada copy** da lista, o sistema executa:
 
 ---
 
+## ⚡ Automação (botão GERAR AGORA)
+
+O botão **GERAR AGORA** do dashboard **copia o comando pronto** para você colar no
+chat do assistente — que executa a geração no Higgsfield via MCP. Por quê não é
+100% um-clique direto da página?
+
+- O Higgsfield **desta configuração** é um **MCP local do Claude Code** (ligado à
+  sessão do chat). Um Artifact publicado só consegue chamar **conectores do
+  claude.ai** (`window.claude.mcp`), não o MCP da sessão.
+
+**Rotas para automação real (um clique gera de fato):**
+1. **Conector claude.ai:** conectar o Higgsfield como *conector* do claude.ai e
+   reconstruir o dash usando a capability `mcp` do Artifact.
+2. **Backend próprio (este repo é um Cloudflare Worker):** um Worker guarda a chave
+   de API do Higgsfield como *secret* e chama a API REST; o dash chama o Worker.
+   Requer a **API key do Higgsfield**.
+
 ## ✅ Status de setup
 
-- [ ] Fotos do **Wendell** arquivadas
-- [ ] Fotos da **Karina** arquivadas
-- [x] Produto(s) cadastrado(s) com identidade visual — **PROTAGON** (paleta + logo)
-- [x] Primeira ficha de briefing preenchida — **Dia dos Pais 2026** (rascunho)
+- [x] Fotos do **Wendell** arquivadas (3 refs → Higgsfield)
+- [x] Fotos da **Karina** arquivadas (3 refs → Higgsfield)
+- [x] Fotos do **Casal** (Wendell+Karina) arquivadas
+- [x] Produto(s) cadastrado(s) — **PROTAGON** e **ISD**
+- [x] Primeira ficha de briefing preenchida — **Dia dos Pais 2026**
 
 ### Produtos cadastrados
 | Produto | Paleta | Logo | Tipografia | Referências |
