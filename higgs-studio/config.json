@@ -50,8 +50,9 @@
       "logo": { "url": "https://lh3.googleusercontent.com/d/1GOPQXOyBJTuweU5-zHSY8setntvZzOuN", "media_id": "f062fc48-e611-43e7-a36f-05e6e718638d" },
       "colors": ["#000000", "#FD7400", "#8A8B90", "#E6E7EA", "#FFFFFF"],
       "tone": "alta energia, velocidade, urgencia, digital/marketing",
-      "style": "fundo preto, destaques laranja de pista (#FD7400), tipografia pesada em caixa alta com efeito metalico/cromado, sensacao de velocidade/movimento, energetico; logo IMERSAO SPRINT DIGITAL (pista + cifrao)",
-      "avoid": "azul/dourado (isso e do PROTAGON); perder o efeito metalico da tipografia; cores fora da paleta"
+      "style": "fundo preto, destaques laranja de pista (#FD7400), sensacao de velocidade/movimento, energetico. COPIES sempre BRANCAS com palavras/frases-chave em LARANJA #FD7400 (fundo escuro/preto), ou PRETO com laranja (fundo claro). O efeito 3D escovado/metalico pertence SOMENTE ao logo IMERSAO SPRINT DIGITAL (pista + cifrao) - nunca no texto das copies.",
+      "avoid": "azul/dourado (isso e do PROTAGON); efeito metalico/cromado/3D no TEXTO das copies (so no logo); texto que nao seja branco/laranja (fundo escuro) ou preto/laranja (fundo claro); cores fora da paleta",
+      "contrast_rule": "roupa do expert deve contrastar com o fundo: fundo escuro/preto -> roupas claras (branco/bege/cinza); sempre camisas e blazers elegantes"
     }
   }
 }

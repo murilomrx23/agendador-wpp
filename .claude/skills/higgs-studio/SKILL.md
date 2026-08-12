@@ -64,6 +64,24 @@ Carregue as ferramentas via ToolSearch: `mcp__Higgsfield__generate_image`,
 5. **Mostrar & registrar** — `show_generation_by_ids` com todos os jobs. Registre
    os links e job ids em `higgs-studio/saidas/AAAA-MM-campanha.md` (crie/atualize).
 
+## Regras de composição (OBRIGATÓRIAS)
+- **Contraste roupa × fundo (sempre):** a roupa do expert deve CONTRASTAR com o
+  fundo. Fundo escuro/preto → roupas **claras** (branco, bege, cinza claro). Fundo
+  claro → roupas **escuras**. O expert nunca "some" no fundo.
+- **Traje:** sempre elegante e sofisticado — **camisas e blazers** (nada casual).
+- **Texto das copies ≠ material:** NUNCA aplique efeito metálico/cromado/3D/escovado
+  no texto das copies. Esses efeitos são de logo, não de texto corrido.
+
+## Regras por produto
+- **ISD (Imersão Sprint Digital):**
+  - O **efeito 3D escovado (brushed metal)** pertence **somente ao LOGO** — nunca
+    às copies.
+  - **Copies sempre BRANCAS**; palavras/frases-chave em **LARANJA `#FD7400`** para
+    destaque em fundos **escuros/preto**. Em fundos **claros**, texto **PRETO** com
+    destaque **laranja**.
+  - Paleta: preto, laranja `#FD7400`, prata, branco. Nunca azul/dourado.
+- **PROTAGON:** azul-marinho + dourado; leão oficial; tipografia forte em caixa alta.
+
 ## Regras de qualidade
 - **Ortografia perfeita em PT-BR** (VOCÊ, HERÓI, memórias, Presença, É). Confira o
   texto exato de cada copy antes de gerar.
