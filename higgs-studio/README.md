@@ -89,7 +89,12 @@ Para **cada copy** da lista, o sistema executa:
 
 - [ ] Fotos do **Wendell** arquivadas
 - [ ] Fotos da **Karina** arquivadas
-- [ ] Produto(s) cadastrado(s) com identidade visual
-- [ ] Primeira ficha de briefing preenchida
+- [x] Produto(s) cadastrado(s) com identidade visual — **PROTAGON** (paleta + logo)
+- [x] Primeira ficha de briefing preenchida — **Dia dos Pais 2026** (rascunho)
+
+### Produtos cadastrados
+| Produto | Paleta | Logo | Tipografia | Referências |
+|---------|--------|------|------------|-------------|
+| **PROTAGON** (`produtos/protagon`) | ✅ | ✅ | ⬜ | ⬜ |
 
 _Envie os assets ao assistente e ele salva/organiza aqui automaticamente._
