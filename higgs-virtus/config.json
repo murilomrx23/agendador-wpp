@@ -34,7 +34,8 @@
           "url": "https://lh3.googleusercontent.com/d/19wauqiB6WDFWt8a86GTgnYz5QTDgiTvW",
           "media_id": "c836e109-1eb3-42a4-9628-a2dcb773630c"
         }
-      ]
+      ],
+      "drive_folder_id": "13HySLTnV0D8z5o4s_cOaWec_c7dQbN7p"
     },
     "KARINA": {
       "label": "Karina",
@@ -52,7 +53,8 @@
           "url": "https://lh3.googleusercontent.com/d/1tz7UODk3JqyYZoIME7TRSGCkXMILRuEN",
           "media_id": "defa168b-a816-4557-a68d-0dbee1a06905"
         }
-      ]
+      ],
+      "drive_folder_id": "1C8FZkCkM8nLDX9eumfPfRK87RNvSaVNz"
     },
     "WENDELL E KARINA": {
       "label": "Wendell + Karina",
@@ -66,7 +68,8 @@
           "url": "https://lh3.googleusercontent.com/d/1UKXo4ohQDid060-be4JYeFp5pOyzMZ5b",
           "media_id": "2b500d57-5264-45f0-8d3f-9762c79b7ff0"
         }
-      ]
+      ],
+      "drive_folder_id": "1DDtM2x0RX6sxemDuu4HuyJU9cmiVOJCv"
     }
   },
   "products": {
@@ -171,5 +174,9 @@
     "ISD": ".claude/skills/higgs-virtus/referencias/estilo-isd.md",
     "PROTAGON": ".claude/skills/higgs-virtus/referencias/estilo-protagon.md"
   },
-  "cta_rule": "Verde e permitido SOMENTE como botao/acao de CTA (alto contraste), nunca cor estrutural/decorativa/fundo. Vale para ISD e PROTAGON."
+  "cta_rule": "Verde e permitido SOMENTE como botao/acao de CTA (alto contraste), nunca cor estrutural/decorativa/fundo. Vale para ISD e PROTAGON.",
+  "experts_folder": {
+    "drive_folder_id": "1x84DWCMAoTJcbCgbcxSZAQWtig9Lmir-",
+    "rule": "Fonte UNICA das fotos dos experts. Sempre anexar como referencia (medias role image). NUNCA usar Characters/Soul do Higgsfield."
+  }
 }

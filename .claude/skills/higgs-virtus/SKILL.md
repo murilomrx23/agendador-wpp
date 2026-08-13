@@ -55,11 +55,17 @@ Carregue as ferramentas via ToolSearch: `mcp__Higgsfield__generate_image`,
    **Antes de escrever o prompt, sorteie uma combinação distinta de POSE +
    ENQUADRAMENTO + ROUPA + LADO do banco de variação abaixo** — cada lâmina da
    mesma campanha usa uma combinação diferente das anteriores (ver "Variação").
-2. **Referências** — em `medias`, anexe (role `image`):
-   - as `media_id` das fotos do expert (se não for LIVRE),
+2. **Referências (SEM Characters — sempre fotos reais)** — em `medias`, anexe
+   (role `image`):
+   - as fotos do expert (se não for LIVRE) — **sempre** as imagens da pasta oficial
+     de experts no Drive (`experts[EXPERT].refs[]`, que apontam para essa pasta),
    - a `media_id` do logo do produto.
-   Se um `media_id` falhar/expirar, re-importe com
-   `mcp__Higgsfield__media_import_url` usando a `url` do config e use o novo id.
+   **NUNCA** use o recurso **Characters/Soul** do Higgsfield (nem `soul_id`,
+   `show_characters`, treino de personagem, `soul_2`/`soul_cast`): a semelhança do
+   expert vem **exclusivamente** dessas fotos anexadas como referência. Se um
+   `media_id` falhar/expirar, re-importe a foto com
+   `mcp__Higgsfield__media_import_url` usando a `url` (lh3 do Drive) do config e use
+   o novo id — não substitua por Character.
 3. **Gerar 1:1** — `generate_image` com `model: gpt_image_2`, `aspect_ratio: 1:1`,
    `quality: medium`, `resolution: 2k`. Para várias copies, use
    `generate_image_batch` + `jobs_wait`.
@@ -70,6 +76,9 @@ Carregue as ferramentas via ToolSearch: `mcp__Higgsfield__generate_image`,
    os links e job ids em `higgs-virtus/saidas/AAAA-MM-campanha.md` (crie/atualize).
 
 ## Regras de composição (OBRIGATÓRIAS)
+- **Experts por foto real, nunca Characters:** a identidade de Wendell/Karina vem
+  SEMPRE das fotos da pasta oficial de experts (Drive), anexadas como referência em
+  `medias`. É **proibido** usar Characters/Soul/treino de personagem do Higgsfield.
 - **Contraste roupa × fundo (sempre):** a roupa do expert deve CONTRASTAR com o
   fundo. Fundo escuro/preto → roupas **claras** (branco, bege, cinza claro). Fundo
   claro → roupas **escuras**. O expert nunca "some" no fundo.
