@@ -168,8 +168,8 @@
   },
   "variation_rule": "Numa mesma campanha o expert nunca aparece igual em duas laminas: para cada lamina sorteie uma combinacao INEDITA de POSE + ENQUADRAMENTO + ROUPA (cor/textura clara) + LADO, mantendo contraste roupa x fundo, elegancia (camisas/blazers) e fidelidade de rosto. Ver secao 'Variacao' no SKILL.md.",
   "style_dossiers": {
-    "ISD": ".claude/skills/higgs-studio/referencias/estilo-isd.md",
-    "PROTAGON": ".claude/skills/higgs-studio/referencias/estilo-protagon.md"
+    "ISD": ".claude/skills/higgs-virtus/referencias/estilo-isd.md",
+    "PROTAGON": ".claude/skills/higgs-virtus/referencias/estilo-protagon.md"
   },
   "cta_rule": "Verde e permitido SOMENTE como botao/acao de CTA (alto contraste), nunca cor estrutural/decorativa/fundo. Vale para ISD e PROTAGON."
 }

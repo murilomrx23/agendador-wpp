@@ -1,4 +1,4 @@
-# 🎨 Higgs Studio — Sistema de Geração de Artes em Massa
+# 🎨 Higgs Virtus — Sistema de Geração de Artes em Massa
 
 Sistema operado via **Higgsfield (motor ChatGPT / GPT Image 2)** para gerar artes
 em série, com **fidelidade de rosto dos experts** e **identidade visual por produto**.
@@ -7,7 +7,7 @@ em série, com **fidelidade de rosto dos experts** e **identidade visual por pro
 > **resolução 2K** · ~**3 créditos** por imagem. Formato base **1:1**; **9:16** e
 > **4:5** derivam por outpaint da 1:1.
 >
-> 🖥️ **Dashboard:** abra `higgs-studio/dashboard.html` (ou o link do Artifact) para
+> 🖥️ **Dashboard:** abra `higgs-virtus/dashboard.html` (ou o link do Artifact) para
 > montar o briefing de forma visual — seleciona expert + produto, cola as copies e
 > gera o comando pronto para o assistente executar.
 
@@ -22,7 +22,7 @@ em série, com **fidelidade de rosto dos experts** e **identidade visual por pro
 ## 🗂️ Estrutura do sistema
 
 ```
-higgs-studio/
+higgs-virtus/
 ├── experts/            → ABAS DE EXPERT (fotos de referência arquivadas)
 │   ├── wendell/
 │   ├── karina/
@@ -96,12 +96,12 @@ Para **cada copy** da lista, o sistema executa:
 ## ⚡ Como gerar (recomendado: a SKILL)
 
 O jeito mais simples — **sem deploy, sem API key, sem site**. Existe uma skill do
-Claude Code em `.claude/skills/higgs-studio/` que executa a geração no Higgsfield
+Claude Code em `.claude/skills/higgs-virtus/` que executa a geração no Higgsfield
 via MCP seguindo estes padrões (experts + produtos + motor).
 
 **Como usar:** no Claude Code (com este repo aberto e o MCP do Higgsfield
-conectado), invoque **`/higgs-studio`** ou simplesmente peça — ex.:
-> "Higgs Studio: expert Karina, produto PROTAGON, gera essas 3 copies: …"
+conectado), invoque **`/higgs-virtus`** ou simplesmente peça — ex.:
+> "Higgs Virtus: expert Karina, produto PROTAGON, gera essas 3 copies: …"
 
 A skill lê `config.json`, monta os prompts, gera 1:1 → reframe 9:16/4:5 com as
 referências certas e devolve os links.

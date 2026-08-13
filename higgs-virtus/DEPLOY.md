@@ -1,6 +1,6 @@
-# 🚀 Deploy — Higgs Studio no Cloudflare Worker (GERAR AGORA real)
+# 🚀 Deploy — Higgs Virtus no Cloudflare Worker (GERAR AGORA real)
 
-Este repositório é um **Cloudflare Worker**. O Higgs Studio adiciona um backend que
+Este repositório é um **Cloudflare Worker**. O Higgs Virtus adiciona um backend que
 chama a **API do Higgsfield** e um dashboard servido pelo próprio Worker em
 **`/studio`** — com o botão **GERAR AGORA** que gera de verdade (sem chat).
 
@@ -57,11 +57,11 @@ curl -sS -X POST https://platform.higgsfield.ai/v1/text2image/soul \
 
 - Padrão do config: `gpt_image_2`. Se a **API REST** não expuser esse modelo (ele
   pode ser exclusivo do MCP/app), use `soul` (forte em fidelidade de rosto) — é só
-  mudar `engine.model` em `higgs-studio/config.json` ou enviar `model` no request.
+  mudar `engine.model` em `higgs-virtus/config.json` ou enviar `model` no request.
 
 ## 5) Fonte única de dados
 
-`higgs-studio/config.json` alimenta **o dashboard e o backend** (experts + produtos +
+`higgs-virtus/config.json` alimenta **o dashboard e o backend** (experts + produtos +
 motor). Mudou uma foto/paleta ali → os dois refletem. Sem duplicação.
 
 ## Rotas expostas

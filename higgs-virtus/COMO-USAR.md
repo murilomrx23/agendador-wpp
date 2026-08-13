@@ -1,4 +1,4 @@
-# 🎨 Higgs Studio — Como pedir suas artes
+# 🎨 Higgs Virtus — Como pedir suas artes
 
 Guia rápido para o time solicitar criativos de **ISD** e **PROTAGON**. A identidade
 de cada produto (paleta, tipografia, fidelidade de rosto dos experts, regras de
@@ -16,7 +16,7 @@ precisa dizer o essencial.
 
 ### 1) Comando de 1 linha (mais simples)
 ```
-Higgs Studio: ISD, expert Wendell — gera os 10 estáticos do doc [ISD] Remarketing
+Higgs Virtus: ISD, expert Wendell — gera os 10 estáticos do doc [ISD] Remarketing
 ```
 ```
 Gera no Higgs 5 posts do PROTAGON com a Karina sobre [tema]
@@ -24,7 +24,7 @@ Gera no Higgs 5 posts do PROTAGON com a Karina sobre [tema]
 
 ### 2) Ficha rápida (recomendado para lote)
 ```
-🎨 HIGGS STUDIO — GERAR ARTES
+🎨 HIGGS VIRTUS — GERAR ARTES
 PRODUTO: ISD              (ou PROTAGON)
 EXPERT: WENDELL           (WENDELL | KARINA | WENDELL E KARINA | LIVRE)
 VARIANTE: DARK            (DARK | LIGHT — opcional)
@@ -37,10 +37,10 @@ COPIES:
 
 ### 3) Só apontar a fonte das copies
 ```
-Higgs Studio: ISD + Wendell. Copies no Google Doc "[ISD] Remarketing" (Ads 01–10). Gera tudo.
+Higgs Virtus: ISD + Wendell. Copies no Google Doc "[ISD] Remarketing" (Ads 01–10). Gera tudo.
 ```
 
-**Palavras-gatilho:** "Higgs Studio", "gerar artes", "gera no Higgs", "criativo/post/campanha ISD ou PROTAGON".
+**Palavras-gatilho:** "Higgs Virtus", "gerar artes", "gera no Higgs", "criativo/post/campanha ISD ou PROTAGON".
 
 ## O que já é automático (não precisa mandar)
 - Paleta oficial de cada produto (ISD `#FF7000` preto/branco · PROTAGON azul-marinho + dourado)

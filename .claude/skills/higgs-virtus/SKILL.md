@@ -1,37 +1,39 @@
 ---
-name: higgs-studio
+name: higgs-virtus
 description: >-
-  Gera artes de marca em massa no Higgsfield (motor GPT Image 2) seguindo os
-  padrões do Higgs Studio deste repositório: seleciona um EXPERT (Wendell /
-  Karina / Ambos / Livre) + um PRODUTO (PROTAGON / ISD) + uma lista de COPIES, e
-  produz cada arte em 1:1 e depois reframe para 9:16 (Stories) e 4:5 (Feed), com
-  fidelidade de rosto dos experts e identidade visual do produto. Use sempre que
-  o usuário pedir para gerar arte / criativo / post / campanha (ex.: Dia dos
-  Pais) para PROTAGON ou ISD, disser "Higgs Studio", "gerar artes", "gera no
-  Higgs", colar um comando "HIGGS STUDIO — GERAR ARTES", ou preencher uma ficha
-  de briefing em higgs-studio/briefings/.
+  Gera artes de marca em massa no Higgsfield (motor GPT Image 2) usando a
+  identidade Virtus deste repositório (experts Wendell / Karina + produtos
+  PROTAGON / ISD): seleciona EXPERT + PRODUTO + lista de COPIES e produz cada
+  arte em 1:1 e depois reframe para 9:16 (Stories) e 4:5 (Feed), com fidelidade
+  de rosto dos experts e identidade visual do produto. Use APENAS quando o pedido
+  for da marca Virtus — o usuário disser "Higgs Virtus", pedir arte / criativo /
+  post / campanha para PROTAGON ou ISD, com Wendell ou Karina, colar um comando
+  "HIGGS VIRTUS — GERAR ARTES", ou preencher uma ficha em higgs-virtus/briefings/.
+  NÃO use para pedidos genéricos ao Higgsfield (imagens/vídeos avulsos sem relação
+  com ISD, PROTAGON, Wendell ou Karina) — nesse caso use o Higgsfield direto, sem
+  aplicar este conhecimento de marca.
 ---
 
-# Higgs Studio — geração de artes no Higgsfield (via MCP)
+# Higgs Virtus — geração de artes no Higgsfield (via MCP)
 
 Executa geração em massa de artes de marca usando as ferramentas MCP do
 Higgsfield já conectadas nesta sessão. **Não** precisa de deploy, API key ou
 Worker — roda direto pelo assistente.
 
 ## Fonte única de dados
-Antes de gerar, **leia `higgs-studio/config.json`** (na raiz do repo). Ele contém:
+Antes de gerar, **leia `higgs-virtus/config.json`** (na raiz do repo). Ele contém:
 - `engine` — motor padrão: `gpt_image_2`, `quality: medium`, `resolution: 2k`,
   formatos `1:1` (base) → `9:16`, `4:5` (derivados).
 - `experts[EXPERT].refs[]` — cada um com `media_id` (Higgsfield) e `url` (pública
   lh3 do Drive) + `desc` (descrição de fidelidade).
 - `products[PRODUTO]` — `logo.media_id/url`, `colors[]`, `tone`, `style`, `avoid`.
 
-Perfis e identidades detalhados também em `higgs-studio/experts/*/perfil.md` e
-`higgs-studio/produtos/*/identidade.md`. Se algo divergir, o `config.json` manda.
+Perfis e identidades detalhados também em `higgs-virtus/experts/*/perfil.md` e
+`higgs-virtus/produtos/*/identidade.md`. Se algo divergir, o `config.json` manda.
 
 ## Entrada (briefing)
 Aceite o briefing em qualquer forma (texto do dashboard, ficha em
-`higgs-studio/briefings/`, ou pedido direto). Extraia:
+`higgs-virtus/briefings/`, ou pedido direto). Extraia:
 - **Expert**: `WENDELL` | `KARINA` | `WENDELL E KARINA` | `LIVRE` (default `LIVRE`).
 - **Produto**: `PROTAGON` | `ISD` (obrigatório).
 - **Copies**: uma por bloco (linha em branco separa). Cada copy = uma arte.
@@ -65,7 +67,7 @@ Carregue as ferramentas via ToolSearch: `mcp__Higgsfield__generate_image`,
    vezes disparam falso-positivo `nsfw`: se acontecer, **refaça o outpaint** (1 a
    2 tentativas) — costuma passar.
 5. **Mostrar & registrar** — `show_generation_by_ids` com todos os jobs. Registre
-   os links e job ids em `higgs-studio/saidas/AAAA-MM-campanha.md` (crie/atualize).
+   os links e job ids em `higgs-virtus/saidas/AAAA-MM-campanha.md` (crie/atualize).
 
 ## Regras de composição (OBRIGATÓRIAS)
 - **Contraste roupa × fundo (sempre):** a roupa do expert deve CONTRASTAR com o
@@ -195,6 +197,6 @@ créditos) e confirme o saldo com `mcp__Higgsfield__balance` se necessário. Par
 1ª arte de um estilo novo, gere só a 1:1 e peça validação antes de escalar.
 
 ## Exemplos de gatilho
-- "Higgs Studio: expert Karina, produto PROTAGON, gera essas 3 copies…"
-- Colar o bloco "🎨 HIGGS STUDIO — GERAR ARTES …" do dashboard.
+- "Higgs Virtus: expert Karina, produto PROTAGON, gera essas 3 copies…"
+- Colar o bloco "🎨 HIGGS VIRTUS — GERAR ARTES …" do dashboard.
 - "Gera os posts de Dia dos Pais do PROTAGON com o Wendell."
