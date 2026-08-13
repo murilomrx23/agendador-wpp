@@ -1,0 +1,375 @@
+<title>Higgs Studio</title>
+<style>
+  /* ---------- Tokens: light is the bare :root ---------- */
+  :root{
+    --ground:#F4EFE6;
+    --surface:#FBF7EF;
+    --surface-2:#EFE8DA;
+    --ink:#1B1812;
+    --ink-soft:#4A4437;
+    --muted:#726B5B;
+    --line:#E1D9C8;
+    --line-strong:#CFC5AF;
+    --accent:#FF7000;          /* ISD orange — fills */
+    --accent-ink:#C24E00;      /* accent as text on light ground */
+    --accent-soft:#FCE6D2;
+    --gold:#9C7A16;            /* PROTAGON gold — text on light */
+    --gold-fill:#EBC042;
+    --navy:#031749;
+    --green:#1E8E4A;
+    --shadow:0 1px 2px rgba(27,24,18,.06),0 8px 28px rgba(27,24,18,.08);
+    --radius:14px;
+    --maxw:940px;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --ground:#141310;
+      --surface:#1C1A15;
+      --surface-2:#252118;
+      --ink:#F5F1E8;
+      --ink-soft:#D8D1C1;
+      --muted:#9B9384;
+      --line:#302B22;
+      --line-strong:#413A2D;
+      --accent:#FF7000;
+      --accent-ink:#FF8C33;
+      --accent-soft:#3A2311;
+      --gold:#EBC042;
+      --gold-fill:#EBC042;
+      --navy:#7C9AD6;
+      --green:#43C776;
+      --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 34px rgba(0,0,0,.45);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#141310;
+    --surface:#1C1A15;
+    --surface-2:#252118;
+    --ink:#F5F1E8;
+    --ink-soft:#D8D1C1;
+    --muted:#9B9384;
+    --line:#302B22;
+    --line-strong:#413A2D;
+    --accent:#FF7000;
+    --accent-ink:#FF8C33;
+    --accent-soft:#3A2311;
+    --gold:#EBC042;
+    --gold-fill:#EBC042;
+    --navy:#7C9AD6;
+    --green:#43C776;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 34px rgba(0,0,0,.45);
+  }
+
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;
+    background:var(--ground);
+    color:var(--ink);
+    font-family:"Helvetica Neue",Helvetica,Arial,system-ui,sans-serif;
+    line-height:1.6;
+    font-size:16px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  .mono{font-family:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace}
+
+  /* ---------- Hero ---------- */
+  header.hero{
+    position:relative;
+    overflow:hidden;
+    border-bottom:1px solid var(--line);
+    background:
+      radial-gradient(120% 90% at 88% -10%, color-mix(in srgb,var(--accent) 22%, transparent) 0%, transparent 55%),
+      var(--surface);
+  }
+  .hero-inner{max-width:var(--maxw);margin:0 auto;padding:64px 22px 52px}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:10px;
+    font-size:12.5px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--accent-ink);margin:0 0 22px;
+  }
+  .eyebrow .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
+  h1{
+    font-size:clamp(2.5rem,7vw,4.4rem);
+    line-height:.98;letter-spacing:-.02em;font-weight:800;
+    margin:0 0 20px;text-wrap:balance;
+  }
+  h1 .hl{color:var(--accent-ink)}
+  .lede{font-size:clamp(1.05rem,2.3vw,1.28rem);color:var(--ink-soft);max-width:62ch;margin:0}
+  .hero-meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px}
+  .tag{
+    font-size:13px;font-weight:600;padding:7px 13px;border-radius:999px;
+    background:var(--surface-2);border:1px solid var(--line-strong);color:var(--ink-soft);
+  }
+  .tag b{color:var(--accent-ink);font-weight:700}
+
+  /* ---------- Sections ---------- */
+  section{padding:56px 0}
+  section+section{border-top:1px solid var(--line)}
+  .sec-head{margin:0 0 30px}
+  .kicker{font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+  h2{font-size:clamp(1.5rem,3.4vw,2rem);letter-spacing:-.01em;font-weight:800;margin:0;text-wrap:balance}
+  .sec-head p{color:var(--muted);margin:10px 0 0;max-width:64ch}
+
+  /* ---------- Pipeline (numbered sequence) ---------- */
+  .steps{display:grid;gap:14px}
+  .step{
+    display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:start;
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:18px 20px;box-shadow:var(--shadow);
+  }
+  .step .n{
+    font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:15px;
+    width:38px;height:38px;flex:none;display:grid;place-items:center;border-radius:10px;
+    background:var(--accent);color:#fff;
+  }
+  .step h3{margin:2px 0 3px;font-size:1.05rem;font-weight:700}
+  .step p{margin:0;color:var(--muted);font-size:.97rem}
+  .step .fmt{color:var(--accent-ink);font-weight:600}
+
+  /* ---------- Ways to ask ---------- */
+  .ways{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .way{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:20px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow);
+  }
+  .way .wnum{font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700;color:var(--accent-ink);letter-spacing:.05em}
+  .way h3{margin:0;font-size:1.06rem;font-weight:750}
+  .way .desc{margin:0;color:var(--muted);font-size:.92rem;flex:1}
+
+  /* ---------- Code block + copy ---------- */
+  .code{
+    position:relative;background:var(--surface-2);border:1px solid var(--line-strong);
+    border-radius:11px;padding:14px 15px;padding-right:52px;
+    font-size:13px;line-height:1.65;color:var(--ink);white-space:pre-wrap;word-break:break-word;
+    overflow-x:auto;
+  }
+  .code .c-key{color:var(--accent-ink);font-weight:700}
+  .code .c-mut{color:var(--muted)}
+  .copy{
+    position:absolute;top:9px;right:9px;border:1px solid var(--line-strong);
+    background:var(--surface);color:var(--ink-soft);border-radius:8px;
+    width:34px;height:30px;display:grid;place-items:center;cursor:pointer;
+    transition:background .15s,color .15s,border-color .15s;
+  }
+  .copy:hover{border-color:var(--accent);color:var(--accent-ink)}
+  .copy:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .copy svg{width:15px;height:15px}
+  .copy.done{color:var(--green);border-color:var(--green)}
+
+  .ficha-wrap{margin-top:8px}
+
+  /* ---------- Products ---------- */
+  .prods{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .prod{border-radius:var(--radius);padding:22px;border:1px solid var(--line);box-shadow:var(--shadow);position:relative;overflow:hidden}
+  .prod.isd{background:linear-gradient(160deg,#161310 0%,#221a12 100%);color:#F5F1E8;border-color:#33291d}
+  .prod.pro{background:linear-gradient(160deg,#050B2E 0%,#03123a 100%);color:#EAEEF8;border-color:#12245a}
+  .prod .pname{font-size:1.25rem;font-weight:800;letter-spacing:-.01em;margin:0 0 2px}
+  .prod .ptag{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;margin:0 0 16px;opacity:.85}
+  .prod.isd .ptag{color:#FF8C33}
+  .prod.pro .ptag{color:#EBC042}
+  .prod dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:7px 14px;font-size:.9rem}
+  .prod dt{opacity:.6;font-weight:600}
+  .prod dd{margin:0}
+  .sw{display:flex;gap:6px;margin-top:16px}
+  .sw span{width:26px;height:26px;border-radius:7px;border:1px solid rgba(255,255,255,.18)}
+
+  /* ---------- Auto chips ---------- */
+  .auto{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  .chip{
+    display:flex;gap:11px;align-items:flex-start;
+    background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:13px 15px;
+  }
+  .chip .ck{color:var(--green);flex:none;margin-top:1px}
+  .chip .ck svg{width:17px;height:17px;display:block}
+  .chip p{margin:0;font-size:.92rem}
+  .chip b{font-weight:700}
+
+  /* ---------- Notes ---------- */
+  .notes{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .note{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:11px;padding:16px 18px}
+  .note h4{margin:0 0 5px;font-size:.98rem;font-weight:750}
+  .note p{margin:0;color:var(--muted);font-size:.9rem}
+
+  footer{border-top:1px solid var(--line);padding:30px 0 46px;color:var(--muted);font-size:.85rem}
+  footer .wrap{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;align-items:center}
+  footer .gold{color:var(--gold);font-weight:700}
+
+  @media (max-width:760px){
+    .ways,.prods,.auto,.notes{grid-template-columns:1fr}
+    .hero-inner{padding:48px 22px 40px}
+    section{padding:44px 0}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<header class="hero">
+  <div class="hero-inner">
+    <p class="eyebrow"><span class="dot"></span> Higgs Studio · Guia do time</p>
+    <h1>Como pedir suas <span class="hl">artes</span></h1>
+    <p class="lede">Criativos de <b>ISD</b> e <b>PROTAGON</b> gerados por IA com a identidade de cada produto já aplicada. Você diz o essencial — a paleta, a tipografia, o rosto dos experts e as regras de composição vêm de fábrica.</p>
+    <div class="hero-meta">
+      <span class="tag">Motor: <b>GPT Image 2</b></span>
+      <span class="tag">Entrega: <b>1:1 · 9:16 · 4:5</b></span>
+      <span class="tag">Experts: <b>Wendell · Karina</b></span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section id="fluxo">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="kicker">O fluxo</p>
+        <h2>Do pedido à entrega</h2>
+        <p>Cinco passos. A ordem importa: a primeira lâmina de um estilo novo sempre sai antes, para você validar sem gastar o lote inteiro.</p>
+      </div>
+      <div class="steps">
+        <div class="step"><span class="n">1</span><div><h3>Você pede</h3><p>Produto + expert + as copies — ou só o link do Google Doc com as copies.</p></div></div>
+        <div class="step"><span class="n">2</span><div><h3>Gero a 1:1</h3><p>A 1ª lâmina de um estilo novo sai sozinha, para validação.</p></div></div>
+        <div class="step"><span class="n">3</span><div><h3>Você valida</h3><p>Confere texto, rosto e identidade no widget do Higgsfield.</p></div></div>
+        <div class="step"><span class="n">4</span><div><h3>Escalo o lote</h3><p>Gero as demais copies em 1:1, cada uma com pose e roupa diferentes.</p></div></div>
+        <div class="step"><span class="n">5</span><div><h3>Reframe &amp; entrega</h3><p>Cada arte vira <span class="fmt">9:16 (Stories)</span> e <span class="fmt">4:5 (Feed)</span>.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="pedir">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="kicker">3 formas de pedir</p>
+        <h2>Escolha a que for mais rápida</h2>
+        <p>Todas acordam a skill. Use o botão de copiar e ajuste o conteúdo entre &lt; &gt;.</p>
+      </div>
+      <div class="ways">
+        <div class="way">
+          <span class="wnum">FORMA 1</span>
+          <h3>Comando de 1 linha</h3>
+          <p class="desc">O jeito mais direto. Basta conter produto, expert e o que gerar.</p>
+          <div class="code" data-copy="Higgs Studio: ISD, expert Wendell — gera os 10 estáticos do doc [ISD] Remarketing"><button class="copy" aria-label="Copiar"></button><span class="c-key">Higgs Studio:</span> ISD, expert Wendell — gera os 10 estáticos do doc [ISD] Remarketing</div>
+        </div>
+        <div class="way">
+          <span class="wnum">FORMA 2</span>
+          <h3>Ficha rápida</h3>
+          <p class="desc">Recomendada para lotes. Preenche e cola — os campos opcionais podem ficar de fora.</p>
+          <div class="code ficha-wrap" data-copy="🎨 HIGGS STUDIO — GERAR ARTES&#10;PRODUTO: ISD&#10;EXPERT: WENDELL&#10;VARIANTE: DARK&#10;FORMATOS: 1:1, 9:16, 4:5&#10;COPIES:&#10;- <copy 1>&#10;- <copy 2>&#10;- <copy 3>"><button class="copy" aria-label="Copiar"></button><span class="c-key">🎨 HIGGS STUDIO — GERAR ARTES</span>
+<span class="c-key">PRODUTO:</span> ISD
+<span class="c-key">EXPERT:</span> WENDELL
+<span class="c-key">VARIANTE:</span> DARK  <span class="c-mut">(opcional)</span>
+<span class="c-key">FORMATOS:</span> 1:1, 9:16, 4:5  <span class="c-mut">(padrão)</span>
+<span class="c-key">COPIES:</span>
+- &lt;copy 1&gt;
+- &lt;copy 2&gt;
+- &lt;copy 3&gt;</div>
+        </div>
+        <div class="way">
+          <span class="wnum">FORMA 3</span>
+          <h3>Apontar o doc</h3>
+          <p class="desc">Se as copies estão num Google Doc, só aponte — eu busco e extraio.</p>
+          <div class="code" data-copy='Higgs Studio: ISD + Wendell. Copies no Google Doc "[ISD] Remarketing" (Ads 01–10). Gera tudo.'><button class="copy" aria-label="Copiar"></button><span class="c-key">Higgs Studio:</span> ISD + Wendell. Copies no Google Doc "[ISD] Remarketing" (Ads 01–10). Gera tudo.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="produtos">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="kicker">Os dois produtos</p>
+        <h2>Identidades que nunca se misturam</h2>
+        <p>Cada um tem DNA visual próprio. Você não precisa descrever nada disso — só nomear o produto.</p>
+      </div>
+      <div class="prods">
+        <div class="prod isd">
+          <p class="pname">ISD</p>
+          <p class="ptag">Imersão Sprint Digital</p>
+          <dl>
+            <dt>DNA</dt><dd>Velocidade, execução, faturamento</dd>
+            <dt>Cores</dt><dd>Preto + laranja #FF7000 + branco</dd>
+            <dt>Clima</dt><dd>Comercial, ágil, digital</dd>
+            <dt>Logo</dt><dd>Efeito escovado — só no logo</dd>
+          </dl>
+          <div class="sw"><span style="background:#141310"></span><span style="background:#FF7000"></span><span style="background:#FFFFFF"></span><span style="background:#8A8B90"></span></div>
+        </div>
+        <div class="prod pro">
+          <p class="pname">PROTAGON</p>
+          <p class="ptag">Evento premium</p>
+          <dl>
+            <dt>DNA</dt><dd>Autoridade, prosperidade, transformação</dd>
+            <dt>Cores</dt><dd>Azul-marinho + dourado #EBC042→#FFE28E</dd>
+            <dt>Clima</dt><dd>Premium, presencial, sóbrio</dd>
+            <dt>Ouro</dt><dd>Marca-texto — só no que tem valor</dd>
+          </dl>
+          <div class="sw"><span style="background:#050B2E"></span><span style="background:#031749"></span><span style="background:#EBC042"></span><span style="background:#FFFFFF"></span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="automatico">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="kicker">Já vem de fábrica</p>
+        <h2>O que você não precisa mandar</h2>
+        <p>Tudo abaixo é aplicado automaticamente pela skill em toda arte.</p>
+      </div>
+      <div class="auto" id="autoGrid"></div>
+    </div>
+  </section>
+
+  <section id="antes">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="kicker">Antes de começar</p>
+        <h2>Três cuidados que evitam retrabalho</h2>
+      </div>
+      <div class="notes">
+        <div class="note"><h4>Conexões ligadas</h4><p>Confirme que <b>Higgsfield</b> e <b>Google Drive</b> estão conectados na conversa.</p></div>
+        <div class="note"><h4>1 copy = 1 arte</h4><p>Separe as copies em linhas ou blocos. Cada bloco vira uma lâmina.</p></div>
+        <div class="note"><h4>Valide a 1ª 1:1</h4><p>Num estilo novo, aprove a primeira antes de escalar — economiza créditos.</p></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Higgs Studio · geração de criativos <span class="gold">ISD</span> &amp; <span class="gold">PROTAGON</span></span>
+    <span>Gatilhos: “Higgs Studio” · “gerar artes” · “gera no Higgs”</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  // Auto chips
+  var items=[
+    ["Paleta oficial","de cada produto, sem variações arbitrárias"],
+    ["Contraste roupa × fundo","fundo escuro → roupas claras; traje elegante"],
+    ["Efeito escovado só no logo","copies ISD brancas com destaque laranja"],
+    ["Tipografia","caixa alta só na headline; apoios em caixa baixa"],
+    ["Variação por lâmina","pose, enquadramento e roupa mudam a cada arte"],
+    ["Fidelidade de rosto","Wendell e Karina fiéis às referências"],
+    ["Personagem dominante","expert ocupa 40–60% da peça"],
+    ["DARK / LIGHT + reframe","variantes e 9:16 · 4:5 automáticos"]
+  ];
+  var check='<span class="ck"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5l4 4 8-9"/></svg></span>';
+  document.getElementById('autoGrid').innerHTML=items.map(function(i){
+    return '<div class="chip">'+check+'<p><b>'+i[0]+'</b> — '+i[1]+'</p></div>';
+  }).join('');
+
+  // Copy buttons
+  var copyIcon='<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="7" y="7" width="10" height="11" rx="2"/><path d="M13 4H5a2 2 0 0 0-2 2v9"/></svg>';
+  var okIcon='<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5l4 4 8-9"/></svg>';
+  document.querySelectorAll('.copy').forEach(function(btn){
+    btn.innerHTML=copyIcon;
+    btn.addEventListener('click',function(){
+      var text=btn.parentElement.getAttribute('data-copy')||'';
+      var done=function(){btn.innerHTML=okIcon;btn.classList.add('done');setTimeout(function(){btn.innerHTML=copyIcon;btn.classList.remove('done');},1600);};
+      if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(done).catch(function(){fallback(text,done);});}
+      else{fallback(text,done);}
+    });
+  });
+  function fallback(text,done){var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done();}catch(e){}document.body.removeChild(ta);}
+})();
+</script>
