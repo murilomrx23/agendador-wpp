@@ -74,6 +74,12 @@ Carregue as ferramentas via ToolSearch: `mcp__Higgsfield__generate_image`,
 - **Traje:** sempre elegante e sofisticado — **camisas e blazers** (nada casual).
 - **Texto das copies ≠ material:** NUNCA aplique efeito metálico/cromado/3D/escovado
   no texto das copies. Esses efeitos são de logo, não de texto corrido.
+- **Hierarquia tipográfica (caixa alta só na headline):** SOMENTE a **headline
+  principal** vai em CAIXA ALTA (e grande/pesada). Todos os demais textos — apoio,
+  subtítulo, descrição, rodapé/CTA, selos — vão em **caixa baixa** (sentence case:
+  só a 1ª letra e nomes próprios maiúsculos). Nada de arte "gritando" com tudo em
+  maiúsculas. Exceção: siglas/valores mantêm sua forma (ISD, R$ 100 mil, 50% OFF).
+  As palavras-chave em destaque (laranja) seguem a caixa do texto onde estão.
 
 ## Variação de pose, enquadramento e roupa (OBRIGATÓRIA)
 Numa mesma campanha, o expert **não pode aparecer igual em duas lâminas**. Se todas
@@ -113,6 +119,20 @@ diferentes entre si. Registre em `saidas/` qual combinação foi usada em cada l
     destaque em fundos **escuros/preto**. Em fundos **claros**, texto **PRETO** com
     destaque **laranja**.
   - Paleta: preto, laranja `#FD7400`, prata, branco. Nunca azul/dourado.
+  - **Dispositivos visuais da marca (das refs oficiais):** use quando fizer sentido
+    para a copy —
+    - **Cards flutuantes de notificação de venda** ao redor do expert: pequenos
+      balões escuros com "Venda realizada · Sua comissão R$ 497,00" + "Agora / há 7
+      min" (dão prova social e energia);
+    - **Faixa de data e local** do evento em destaque (ex.: "02 e 03 de outubro em
+      Recife-PE") — sempre confira data/cidade da copy vigente;
+    - **Linha de condição especial** ("condição especial exclusiva para quem já
+      visitou a página da ISD") e CTA no padrão "Toque em SAIBA MAIS…";
+    - Clima de **evento/palco, energia e velocidade** (traços de pista laranja).
+  - **Refs visuais oficiais** ficam no Drive (pasta "2 - ISD":
+    `18c1SJqYpbuGd3NMkhlO4TVbfRpjgYzPP`) — `REF 1..7.png`, `ISD PALETA DE CORES.png`,
+    `LOGO ISD 1.png`. Quando possível, **anexe as refs como imagens de estilo** em
+    `medias` (role `image`) na geração, para herdar layout/clima — não só descrever.
 - **PROTAGON:** azul-marinho + dourado; leão oficial; tipografia forte em caixa alta.
 
 ## Regras de qualidade

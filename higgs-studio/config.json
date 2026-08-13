@@ -104,7 +104,50 @@
       "tone": "alta energia, velocidade, urgencia, digital/marketing",
       "style": "fundo preto, destaques laranja de pista (#FD7400), sensacao de velocidade/movimento, energetico. COPIES sempre BRANCAS com palavras/frases-chave em LARANJA #FD7400 (fundo escuro/preto), ou PRETO com laranja (fundo claro). O efeito 3D escovado/metalico pertence SOMENTE ao logo IMERSAO SPRINT DIGITAL (pista + cifrao) - nunca no texto das copies.",
       "avoid": "azul/dourado (isso e do PROTAGON); efeito metalico/cromado/3D no TEXTO das copies (so no logo); texto que nao seja branco/laranja (fundo escuro) ou preto/laranja (fundo claro); cores fora da paleta",
-      "contrast_rule": "roupa do expert deve contrastar com o fundo: fundo escuro/preto -> roupas claras (branco/bege/cinza); sempre camisas e blazers elegantes"
+      "contrast_rule": "roupa do expert deve contrastar com o fundo: fundo escuro/preto -> roupas claras (branco/bege/cinza); sempre camisas e blazers elegantes",
+      "style_refs": [
+        {
+          "name": "REF 1",
+          "file_id": "1nbHBIGkfVNiv9i9_ORU4mCdJcWh0o57n",
+          "url": "https://lh3.googleusercontent.com/d/1nbHBIGkfVNiv9i9_ORU4mCdJcWh0o57n"
+        },
+        {
+          "name": "REF 2",
+          "file_id": "1kwrMpGIMyPVXZmkzxOH9qPwTXJro3vQs",
+          "url": "https://lh3.googleusercontent.com/d/1kwrMpGIMyPVXZmkzxOH9qPwTXJro3vQs"
+        },
+        {
+          "name": "REF 3",
+          "file_id": "1eLMioFeAFVor-besbG6oTa3Xqq8ySvRv",
+          "url": "https://lh3.googleusercontent.com/d/1eLMioFeAFVor-besbG6oTa3Xqq8ySvRv"
+        },
+        {
+          "name": "REF 4",
+          "file_id": "1ebCsgtcM9ENxUJP-iHzpuAQaPIlreaaK",
+          "url": "https://lh3.googleusercontent.com/d/1ebCsgtcM9ENxUJP-iHzpuAQaPIlreaaK"
+        },
+        {
+          "name": "REF 5",
+          "file_id": "1yYTqQ4JsDFtw_3r14syW_zkKN0z63zIJ",
+          "url": "https://lh3.googleusercontent.com/d/1yYTqQ4JsDFtw_3r14syW_zkKN0z63zIJ"
+        },
+        {
+          "name": "REF 6",
+          "file_id": "1WbI01VvD51RHuF3BcShFXUEqv570oxvO",
+          "url": "https://lh3.googleusercontent.com/d/1WbI01VvD51RHuF3BcShFXUEqv570oxvO"
+        },
+        {
+          "name": "REF 7",
+          "file_id": "12czs-0LgnRkHYEMYBG5Bs-JmK6xb3SNP",
+          "url": "https://lh3.googleusercontent.com/d/12czs-0LgnRkHYEMYBG5Bs-JmK6xb3SNP"
+        },
+        {
+          "name": "PALETA",
+          "file_id": "1q1XtGZe4OPWAUkpBBbYuqHNzxDZ2kw8b",
+          "url": "https://lh3.googleusercontent.com/d/1q1XtGZe4OPWAUkpBBbYuqHNzxDZ2kw8b"
+        }
+      ],
+      "typography_rule": "Somente a HEADLINE principal em CAIXA ALTA (grande/pesada); apoios, subtitulo, rodape/CTA e selos em caixa baixa (sentence case). Siglas/valores mantem forma (ISD, R$ 100 mil, 50% OFF)."
     }
   },
   "variation_rule": "Numa mesma campanha o expert nunca aparece igual em duas laminas: para cada lamina sorteie uma combinacao INEDITA de POSE + ENQUADRAMENTO + ROUPA (cor/textura clara) + LADO, mantendo contraste roupa x fundo, elegancia (camisas/blazers) e fidelidade de rosto. Ver secao 'Variacao' no SKILL.md."
