@@ -174,9 +174,20 @@
     "ISD": ".claude/skills/higgs-virtus/referencias/estilo-isd.md",
     "PROTAGON": ".claude/skills/higgs-virtus/referencias/estilo-protagon.md"
   },
-  "cta_rule": "Verde e permitido SOMENTE como botao/acao de CTA (alto contraste), nunca cor estrutural/decorativa/fundo. Vale para ISD e PROTAGON.",
+  "cta_rule": "Botao de CTA pode ser VERDE com leve glow (texto branco, alto contraste) nos dois produtos. Verde = SOMENTE acao, nunca cor estrutural/decorativa/fundo. No ISD a faixa laranja continua valida como alternativa.",
   "experts_folder": {
     "drive_folder_id": "1x84DWCMAoTJcbCgbcxSZAQWtig9Lmir-",
     "rule": "Fonte UNICA das fotos dos experts. Sempre anexar como referencia (medias role image). NUNCA usar Characters/Soul do Higgsfield."
-  }
+  },
+  "creative_concept_rule": "Liberdade criativa: extrair a palavra/ideia-chave da copy e fazer o expert INTERAGIR com um elemento que a represente (prop nas maos ou cena no 2o plano); a EXPRESSAO do expert segue o TOM da copy (dor->preocupado/serio; promessa->confiante). Ex.: 'sua fortuna nao vira do seu salario' -> Wendell com carteira vazia, serio. Ver secao 'Conceito visual' no SKILL.md.",
+  "scenarios": [
+    "composicao grafica abstrata",
+    "texturas (concreto/papel/metal/tecido)",
+    "palestra/palco com bokeh",
+    "flipchart/quadro branco",
+    "escritorio sofisticado",
+    "evento com plateia",
+    "gradiente institucional",
+    "estudio com luz dramatica"
+  ]
 }

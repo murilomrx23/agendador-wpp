@@ -92,6 +92,41 @@ Carregue as ferramentas via ToolSearch: `mcp__Higgsfield__generate_image`,
   maiúsculas. Exceção: siglas/valores mantêm sua forma (ISD, R$ 100 mil, 50% OFF).
   As palavras-chave em destaque (laranja) seguem a caixa do texto onde estão.
 
+## Conceito visual a partir da copy (LIBERDADE CRIATIVA — vale p/ ISD e PROTAGON)
+Você **tem liberdade** (e deve usá-la) para transformar a copy num conceito visual,
+não só empilhar texto. O método:
+
+1. **Ache a palavra/ideia-chave** da copy (dor, objeto, resultado, número).
+2. **Faça o expert interagir** com um elemento que represente essa ideia — segurando,
+   apontando, mostrando, reagindo a ele. O elemento pode ser um prop nas mãos do
+   expert **ou** uma cena em segundo plano (outra pessoa/objeto ilustrando a ideia).
+3. **A expressão do expert segue o TOM da copy**: preocupado/sério numa dor;
+   confiante/entusiasmado numa promessa; provocativo numa quebra de objeção; caloroso
+   num convite. Rosto sempre fiel às fotos de referência.
+
+Exemplos (copy → conceito):
+- "SUA FORTUNA NÃO VIRÁ DO SEU SALÁRIO" → Wendell segurando uma **carteira vazia**,
+  expressão preocupada/séria; **ou** alguém no 2º plano contando o pouco dinheiro que
+  sobrou do salário.
+- "PLANO 100K NA MÃO" → expert segurando/apresentando um **documento/painel "100K"**,
+  expressão confiante.
+- "2 DIAS E VOCÊ SAI VENDENDO" → expert apontando um **celular com notificação de
+  venda**, sorriso decidido.
+
+Regras: o prop/cena deve reforçar a mensagem (nunca decoração aleatória); manter
+paleta, contraste roupa×fundo e identidade do produto; um conceito forte por peça
+(não poluir). Registre o conceito usado em `saidas/`.
+
+## Cenário / fundo (variar — vale p/ ISD e PROTAGON)
+O fundo **pode e deve variar** conforme a peça, sem quebrar a identidade do produto.
+Banco de cenários: composição gráfica abstrata · **texturas** (concreto, papel,
+metal escovado, tecido) · **ambiente de palestra/palco** com luzes e bokeh ·
+**flipchart/quadro branco** · **escritório** sofisticado · **evento** com plateia ·
+gradiente institucional · estúdio com luz dramática. Escolha o cenário que combina
+com o conceito e o tom; alterne entre lâminas da mesma campanha. Sempre respeitar:
+ISD = preto/laranja com energia de velocidade; PROTAGON = azul-marinho/dourado
+premium; e o contraste roupa×fundo.
+
 ## Variação de pose, enquadramento e roupa (OBRIGATÓRIA)
 Numa mesma campanha, o expert **não pode aparecer igual em duas lâminas**. Se todas
 ficam com a mesma pose/roupa/lado, a série fica monótona. Para **cada** lâmina,
@@ -140,9 +175,11 @@ diferentes entre si. Registre em `saidas/` qual combinação foi usada em cada l
   evento/data/local → CTA. A identidade deve ser reconhecida antes da leitura.
 - **Destaque de cor = SIGNIFICADO, não decoração** (dourado no PROTAGON, laranja no
   ISD): marca só as palavras de maior valor (dinheiro, resultado, condição, 100K…).
-- **CTA em verde é funcional** e permitido nos dois: verde = SOMENTE ação (botão do
-  CTA), nunca cor estrutural/decorativa/fundo. (Compatível com a faixa laranja de
-  CTA do ISD — o verde é opção de botão de ação de alto contraste.)
+- **CTA — botão verde com leve glow** (padrão nos dois produtos): o botão de ação
+  pode ser **verde** com um **glow suave** ao redor, texto branco, alto contraste.
+  Verde = SOMENTE ação (nunca cor estrutural/decorativa/fundo). No ISD, a faixa
+  laranja de CTA continua válida como alternativa; o botão verde com glow é a opção
+  preferida de botão clicável.
 - Cada produto tem variante **DARK** (principal, conversão/oferta/urgência) e
   **LIGHT** (público frio/lifestyle/transformação) — escolha pela intenção da copy.
 
