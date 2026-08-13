@@ -112,6 +112,29 @@ rosto. Ao montar um lote, distribua as combinações para que fiquem visivelment
 diferentes entre si. Registre em `saidas/` qual combinação foi usada em cada lâmina.
 
 ## Regras por produto
+> **Dossiês de estilo (LEIA antes de gerar):** `referencias/estilo-isd.md` e
+> `referencias/estilo-protagon.md` — guias completos de identidade (essência,
+> paleta, fotografia, iluminação, tipografia, hierarquia, elementos, variantes
+> DARK/LIGHT, o que evitar). Os pontos abaixo são o resumo operacional; em caso de
+> dúvida, o dossiê do produto manda.
+
+**Comuns aos dois produtos (dos dossiês):**
+- **Personagem grande e dominante** (~40–60% da peça), saindo parcialmente das
+  bordas, gestos amplos, clima de "especialista em ação no palco" — não foto
+  corporativa genérica. Estrutura: personagem de um lado, zona de texto do outro
+  (ZONA HUMANA + ZONA INFORMATIVA).
+- **Iluminação cinematográfica de evento**: alto contraste, rim light, fundo
+  escuro, separação clara personagem×fundo.
+- **Hierarquia de conversão**: gancho → promessa/dor → prova/benefício →
+  evento/data/local → CTA. A identidade deve ser reconhecida antes da leitura.
+- **Destaque de cor = SIGNIFICADO, não decoração** (dourado no PROTAGON, laranja no
+  ISD): marca só as palavras de maior valor (dinheiro, resultado, condição, 100K…).
+- **CTA em verde é funcional** e permitido nos dois: verde = SOMENTE ação (botão do
+  CTA), nunca cor estrutural/decorativa/fundo. (Compatível com a faixa laranja de
+  CTA do ISD — o verde é opção de botão de ação de alto contraste.)
+- Cada produto tem variante **DARK** (principal, conversão/oferta/urgência) e
+  **LIGHT** (público frio/lifestyle/transformação) — escolha pela intenção da copy.
+
 - **ISD (Imersão Sprint Digital):**
   - O **efeito 3D escovado (brushed metal)** pertence **somente ao LOGO** — nunca
     às copies.
@@ -133,7 +156,27 @@ diferentes entre si. Registre em `saidas/` qual combinação foi usada em cada l
     `18c1SJqYpbuGd3NMkhlO4TVbfRpjgYzPP`) — `REF 1..7.png`, `ISD PALETA DE CORES.png`,
     `LOGO ISD 1.png`. Quando possível, **anexe as refs como imagens de estilo** em
     `medias` (role `image`) na geração, para herdar layout/clima — não só descrever.
-- **PROTAGON:** azul-marinho + dourado; leão oficial; tipografia forte em caixa alta.
+- **ISD — variantes:** **DARK** (preto 50–80% da peça, laranja intenso, glow quente,
+  fotografia cinematográfica) é a principal; **LIGHT** (fundo branco, headline preta,
+  laranja em grandes destaques, lifestyle) para público frio/expansão. Movimento =
+  velocidade de EXECUÇÃO (linhas de velocidade, diagonais, arcos) — sem virar
+  comunicação automobilística. Boxes/faixas laranja, notificações de venda,
+  smartphones/interfaces e objetos 3D com significado (escudo+check = garantia).
+- **PROTAGON:**
+  - Publicidade premium de evento presencial de prosperidade/transformação
+    financeira. **AUTORIDADE + PROSPERIDADE + CLAREZA + IMPACTO + CONVERSÃO.**
+  - Paleta: azuis `#050B2E` `#00063D` `#031749` (fundos) + `#002A90` (energia/rim
+    light); dourado `#EBC042`→`#FFE28E` (prosperidade/valor); branco `#FFFFFF`;
+    preto `#000000`. Gradiente azul `#050B2E`→`#031749`. **Dourado = marca-texto
+    semântico**, nunca colorir todo o texto; nunca dourado genérico/amarelo.
+  - Cenários: palco/evento (luzes azuis, bokeh, telões) · ambiente profissional ·
+    lifestyle aspiracional. Iluminação de palco, rim light azul, alto contraste.
+  - Variantes **DARK** (azul-marinho/preto, dramático, oferta/urgência) e **LIGHT**
+    (branco predominante + azul + dourado, família/futuro) — sempre tipografia
+    pesada, personagem grande, contraste azul/dourado, branding forte, CTA claro.
+  - Bloco de branding + `CIDADE - UF`; data com ícone de calendário dourado/box.
+  - **Nunca** transformar ISD em "Protagon laranja" nem PROTAGON em algo pastel/
+    minimalista: são DNAs de comunicação diferentes (ver dossiês).
 
 ## Regras de qualidade
 - **Ortografia perfeita em PT-BR** (VOCÊ, HERÓI, memórias, Presença, É). Confira o

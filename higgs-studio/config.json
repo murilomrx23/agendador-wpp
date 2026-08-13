@@ -78,15 +78,26 @@
       },
       "colors": [
         "#050B2E",
+        "#00063D",
         "#031749",
         "#002A90",
         "#EBC042",
         "#FFE28E",
-        "#FFFFFF"
+        "#FFFFFF",
+        "#000000"
       ],
-      "tone": "sobrio, premium e aspiracional",
-      "style": "fundo azul-marinho profundo (degrade #050B2E->#031749), destaques dourados (#EBC042->#FFE28E), tipografia forte em caixa alta, muito contraste, visual limpo e imponente; simbolo do leao NOVO PROTAGON em branco/dourado",
-      "avoid": "cores fora da paleta (nada de verde/rosa/pastel); visual poluido; alterar o leao oficial"
+      "tone": "autoridade + prosperidade + transformacao financeira + urgencia + evento premium",
+      "style": "Publicidade premium de evento presencial. Fundos azul-marinho profundo, dourado como marca-texto semantico (valor/dinheiro/resultado), personagem grande e dominante (40-60%), iluminacao de palco/rim light azul, alto contraste, tipografia sans-serif pesada em caixa alta so na headline. DARK (dramatico) e LIGHT (branco+azul+dourado).",
+      "avoid": "laranja/preto do ISD; dourado generico ou amarelo chapado; tons pasteis; rosa; minimalismo editorial; serifa classica como principal; excesso de dourado/glow; 3D decorativo sem funcao; verde como cor estrutural (verde so no CTA)",
+      "gradients": {
+        "azul": "#050B2E -> #031749",
+        "dourado": "#EBC042 -> #FFE28E"
+      },
+      "contrast_rule": "roupa do expert deve contrastar com o fundo: fundo escuro/azul-marinho -> roupas claras; sempre camisas e blazers elegantes",
+      "variants": {
+        "DARK": "azul-marinho/preto, foto dramatica, dourado, luz de palco, alto contraste; dor/oferta/urgencia/conversao",
+        "LIGHT": "branco predominante + azul-marinho + dourado, fotografia clara, editorial; familia/futuro/prosperidade"
+      }
     },
     "ISD": {
       "label": "ISD — Imersão Sprint Digital",
@@ -147,8 +158,18 @@
           "url": "https://lh3.googleusercontent.com/d/1q1XtGZe4OPWAUkpBBbYuqHNzxDZ2kw8b"
         }
       ],
-      "typography_rule": "Somente a HEADLINE principal em CAIXA ALTA (grande/pesada); apoios, subtitulo, rodape/CTA e selos em caixa baixa (sentence case). Siglas/valores mantem forma (ISD, R$ 100 mil, 50% OFF)."
+      "typography_rule": "Somente a HEADLINE principal em CAIXA ALTA (grande/pesada); apoios, subtitulo, rodape/CTA e selos em caixa baixa (sentence case). Siglas/valores mantem forma (ISD, R$ 100 mil, 50% OFF).",
+      "variants": {
+        "DARK": "principal: preto 50-80%, laranja intenso, glow quente, fotografia cinematografica; oferta/conversao/urgencia/garantia",
+        "LIGHT": "fundo branco, headline preta, laranja em grandes destaques, lifestyle aspiracional; publico frio/expansao/transformacao"
+      },
+      "note_orange": "Config usa #FD7400 (estabelecido). Dossie ISD cita laranja oficial ~#FF7000 (aproximado, sem HEX na amostra). Manter #FD7400 salvo o usuario pedir alinhar ao #FF7000."
     }
   },
-  "variation_rule": "Numa mesma campanha o expert nunca aparece igual em duas laminas: para cada lamina sorteie uma combinacao INEDITA de POSE + ENQUADRAMENTO + ROUPA (cor/textura clara) + LADO, mantendo contraste roupa x fundo, elegancia (camisas/blazers) e fidelidade de rosto. Ver secao 'Variacao' no SKILL.md."
+  "variation_rule": "Numa mesma campanha o expert nunca aparece igual em duas laminas: para cada lamina sorteie uma combinacao INEDITA de POSE + ENQUADRAMENTO + ROUPA (cor/textura clara) + LADO, mantendo contraste roupa x fundo, elegancia (camisas/blazers) e fidelidade de rosto. Ver secao 'Variacao' no SKILL.md.",
+  "style_dossiers": {
+    "ISD": ".claude/skills/higgs-studio/referencias/estilo-isd.md",
+    "PROTAGON": ".claude/skills/higgs-studio/referencias/estilo-protagon.md"
+  },
+  "cta_rule": "Verde e permitido SOMENTE como botao/acao de CTA (alto contraste), nunca cor estrutural/decorativa/fundo. Vale para ISD e PROTAGON."
 }
