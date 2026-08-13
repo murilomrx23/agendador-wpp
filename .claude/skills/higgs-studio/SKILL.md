@@ -50,6 +50,9 @@ Carregue as ferramentas via ToolSearch: `mcp__Higgsfield__generate_image`,
    tipografia com o texto EXATO (título / corpo / assinatura) em caixa alta
    geométrica; aplicar o logo pequeno no rodapé; "sem texto extra, sem marca
    d'água, ortografia perfeita". Respeite `product.avoid`.
+   **Antes de escrever o prompt, sorteie uma combinação distinta de POSE +
+   ENQUADRAMENTO + ROUPA + LADO do banco de variação abaixo** — cada lâmina da
+   mesma campanha usa uma combinação diferente das anteriores (ver "Variação").
 2. **Referências** — em `medias`, anexe (role `image`):
    - as `media_id` das fotos do expert (se não for LIVRE),
    - a `media_id` do logo do produto.
@@ -71,6 +74,36 @@ Carregue as ferramentas via ToolSearch: `mcp__Higgsfield__generate_image`,
 - **Traje:** sempre elegante e sofisticado — **camisas e blazers** (nada casual).
 - **Texto das copies ≠ material:** NUNCA aplique efeito metálico/cromado/3D/escovado
   no texto das copies. Esses efeitos são de logo, não de texto corrido.
+
+## Variação de pose, enquadramento e roupa (OBRIGATÓRIA)
+Numa mesma campanha, o expert **não pode aparecer igual em duas lâminas**. Se todas
+ficam com a mesma pose/roupa/lado, a série fica monótona. Para **cada** lâmina,
+componha uma combinação **inédita** (que ainda não saiu nesta campanha) sorteando
+1 item de cada banco abaixo e descrevendo-a explicitamente no prompt:
+
+- **POSE / linguagem corporal:** braços cruzados confiante · uma mão no queixo
+  (pensativo) · apontando para o texto/CTA · palma aberta apresentando o produto ·
+  mãos no bolso do blazer · ajustando o punho da camisa · gesticulando no meio de
+  uma fala · segurando o celular mostrando notificação de venda · rindo natural ·
+  olhar sério direto na câmera · caminhando em direção à câmera · sentado em
+  banqueta alta, inclinado à frente.
+- **ENQUADRAMENTO / ângulo:** close-up de rosto · busto (peito p/ cima) · meio-corpo
+  (cintura) · corpo inteiro · 3/4 de perfil · leve contra-plongée (câmera baixa,
+  imponente) · perfil lateral olhando para o texto.
+- **ROUPA (mantendo contraste e elegância):** varie **peça, cor clara e textura**
+  a cada lâmina — blazer bege + camisa branca · blazer off-white + gola alta clara ·
+  camisa social branca sem blazer, mangas dobradas · blazer cinza-claro + camiseta
+  branca premium · terno claro completo + sem gravata · colete de alfaiataria claro
+  sobre camisa · blazer creme estruturado. (Fundo escuro ⇒ sempre tons claros; nunca
+  repita o mesmo conjunto na campanha.)
+- **LADO / posição na arte:** à esquerda · à direita · centralizado ao fundo ·
+  recortado saindo da borda inferior · em plano detalhe no canto.
+
+Regras do sorteio: (a) **nunca** repita a mesma POSE nem a mesma ROUPA de uma lâmina
+já feita na campanha; (b) alterne o LADO para não deixar a composição sempre igual;
+(c) tudo isso **sem quebrar** contraste, elegância (camisas/blazers) e fidelidade de
+rosto. Ao montar um lote, distribua as combinações para que fiquem visivelmente
+diferentes entre si. Registre em `saidas/` qual combinação foi usada em cada lâmina.
 
 ## Regras por produto
 - **ISD (Imersão Sprint Digital):**
