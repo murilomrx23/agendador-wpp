@@ -138,10 +138,10 @@ diferentes entre si. Registre em `saidas/` qual combinação foi usada em cada l
 - **ISD (Imersão Sprint Digital):**
   - O **efeito 3D escovado (brushed metal)** pertence **somente ao LOGO** — nunca
     às copies.
-  - **Copies sempre BRANCAS**; palavras/frases-chave em **LARANJA `#FD7400`** para
+  - **Copies sempre BRANCAS**; palavras/frases-chave em **LARANJA `#FF7000`** para
     destaque em fundos **escuros/preto**. Em fundos **claros**, texto **PRETO** com
     destaque **laranja**.
-  - Paleta: preto, laranja `#FD7400`, prata, branco. Nunca azul/dourado.
+  - Paleta: preto, laranja `#FF7000`, prata, branco. Nunca azul/dourado.
   - **Dispositivos visuais da marca (das refs oficiais):** use quando fizer sentido
     para a copy —
     - **Cards flutuantes de notificação de venda** ao redor do expert: pequenos

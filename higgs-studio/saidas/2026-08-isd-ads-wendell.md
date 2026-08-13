@@ -7,7 +7,7 @@ foram adaptados para ESTÁTICOS distintos. Total: 10 estáticos 1:1.
 
 ## Diretrizes aplicadas
 - Contraste roupa × fundo: fundo preto → Wendell de camisa/blazer CLAROS.
-- ISD: efeito 3D escovado SÓ no logo; copies BRANCAS + palavras-chave LARANJA #FD7400.
+- ISD: efeito 3D escovado SÓ no logo; copies BRANCAS + palavras-chave LARANJA #FF7000.
 
 ## Estáticos 1:1 (aprovados/novos)
 | Ad | Tema | Job 1:1 |

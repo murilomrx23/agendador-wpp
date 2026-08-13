@@ -107,13 +107,13 @@
       },
       "colors": [
         "#000000",
-        "#FD7400",
+        "#FF7000",
         "#8A8B90",
         "#E6E7EA",
         "#FFFFFF"
       ],
       "tone": "alta energia, velocidade, urgencia, digital/marketing",
-      "style": "fundo preto, destaques laranja de pista (#FD7400), sensacao de velocidade/movimento, energetico. COPIES sempre BRANCAS com palavras/frases-chave em LARANJA #FD7400 (fundo escuro/preto), ou PRETO com laranja (fundo claro). O efeito 3D escovado/metalico pertence SOMENTE ao logo IMERSAO SPRINT DIGITAL (pista + cifrao) - nunca no texto das copies.",
+      "style": "fundo preto, destaques laranja de pista (#FF7000), sensacao de velocidade/movimento, energetico. COPIES sempre BRANCAS com palavras/frases-chave em LARANJA #FF7000 (fundo escuro/preto), ou PRETO com laranja (fundo claro). O efeito 3D escovado/metalico pertence SOMENTE ao logo IMERSAO SPRINT DIGITAL (pista + cifrao) - nunca no texto das copies.",
       "avoid": "azul/dourado (isso e do PROTAGON); efeito metalico/cromado/3D no TEXTO das copies (so no logo); texto que nao seja branco/laranja (fundo escuro) ou preto/laranja (fundo claro); cores fora da paleta",
       "contrast_rule": "roupa do expert deve contrastar com o fundo: fundo escuro/preto -> roupas claras (branco/bege/cinza); sempre camisas e blazers elegantes",
       "style_refs": [
@@ -163,7 +163,7 @@
         "DARK": "principal: preto 50-80%, laranja intenso, glow quente, fotografia cinematografica; oferta/conversao/urgencia/garantia",
         "LIGHT": "fundo branco, headline preta, laranja em grandes destaques, lifestyle aspiracional; publico frio/expansao/transformacao"
       },
-      "note_orange": "Config usa #FD7400 (estabelecido). Dossie ISD cita laranja oficial ~#FF7000 (aproximado, sem HEX na amostra). Manter #FD7400 salvo o usuario pedir alinhar ao #FF7000."
+      "note_orange": "Laranja oficial ISD = #FF7000 (alinhado ao dossie de estilo). Nao usar variacoes arbitrarias."
     }
   },
   "variation_rule": "Numa mesma campanha o expert nunca aparece igual em duas laminas: para cada lamina sorteie uma combinacao INEDITA de POSE + ENQUADRAMENTO + ROUPA (cor/textura clara) + LADO, mantendo contraste roupa x fundo, elegancia (camisas/blazers) e fidelidade de rosto. Ver secao 'Variacao' no SKILL.md.",

@@ -22,7 +22,7 @@ Define a **identidade visual** que toda arte deste produto deve seguir.
   resultado rápido. Ousado e dinâmico (oposto ao tom sóbrio do PROTAGON).
 - **Cores principais (HEX, extraídas do logo):**
   - Preto `#000000` (fundo dominante)
-  - Laranja (pista) `#FD7400` — cor de destaque/energia
+  - Laranja (pista) `#FF7000` — cor de destaque/energia
   - Prata metálico (degradê) `#8A8B90 → #E6E7EA` — tipografia "cromada"
   - Branco `#FFFFFF`
 - **Tipografia:** pesada, caixa alta, condensada, com efeito **metálico/cromado**
