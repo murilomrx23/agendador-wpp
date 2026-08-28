@@ -15,6 +15,7 @@
 import type { Env } from "../types";
 import type { Offer } from "../generator/types";
 import type { FetchOffersParams, OfferSourceAdapter } from "./types";
+import { applyAffiliate } from "./affiliate";
 
 const SHOPEE_GRAPHQL = "https://open-api.affiliate.shopee.com.br/graphql";
 
@@ -82,7 +83,7 @@ export class ShopeeAffiliateSource implements OfferSourceAdapter {
 			throw new Error(`Shopee Afiliados erro: ${JSON.stringify(json.errors)}`);
 		}
 		const nodes = json.data?.productOfferV2?.nodes ?? [];
-		return nodes.map(shopeeNodeToOffer);
+		return nodes.map((n) => shopeeNodeToOffer(n, this.env));
 	}
 }
 
@@ -94,12 +95,12 @@ interface ShopeeNode {
 	offerLink: string;
 }
 
-function shopeeNodeToOffer(n: ShopeeNode): Offer {
+function shopeeNodeToOffer(n: ShopeeNode, env: Env): Offer {
 	const price = parseFloat(n.price ?? n.priceMin ?? "0");
 	return {
 		productName: n.productName,
 		price: isFinite(price) ? price : 0,
-		link: n.offerLink,
+		link: applyAffiliate(n.offerLink, "shopee", env),
 		platform: "shopee",
 		offerType: "padrao",
 		category: "generico",

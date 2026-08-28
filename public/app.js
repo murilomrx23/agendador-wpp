@@ -39,7 +39,9 @@ document.querySelectorAll(".tab").forEach((tab) => {
 		const name = tab.dataset.tab;
 		$("tab-nova").style.display = name === "nova" ? "block" : "none";
 		$("tab-agendadas").style.display = name === "agendadas" ? "block" : "none";
+		$("tab-cupons").style.display = name === "cupons" ? "block" : "none";
 		if (name === "agendadas") loadOffers();
+		if (name === "cupons") loadCoupons();
 	});
 });
 
@@ -151,6 +153,7 @@ $("btn-generate").addEventListener("click", async () => {
 		currentVariations = ad.variations;
 		selectedIndex = 0;
 		renderVariations();
+		showAppliedCoupon(ad.appliedCoupon, ad.offer);
 		$("variations-card").style.display = "block";
 		$("schedule-card").style.display = "block";
 		$("schedule-card").scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -158,6 +161,16 @@ $("btn-generate").addEventListener("click", async () => {
 		$("gen-error").textContent = e.message;
 	}
 });
+
+function showAppliedCoupon(coupon, offer) {
+	const box = $("applied-coupon");
+	if (coupon && (coupon.code || coupon.offValue)) {
+		const label = coupon.code || `${coupon.offValue} OFF ${coupon.description || "TODAS AS LOJAS"}`;
+		box.innerHTML = `<span class="pill ok">Cupom anexado</span> <strong>${escapeHtml(label)}</strong> — auto pela plataforma (${offer?.platform || ""}).`;
+	} else {
+		box.innerHTML = "";
+	}
+}
 
 function renderVariations() {
 	const box = $("variations");
@@ -299,6 +312,75 @@ function copyText(text) {
 
 function escapeHtml(s) {
 	return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+// ---------- cupons ----------
+$("btn-add-coupon").addEventListener("click", async () => {
+	$("coupon-error").textContent = "";
+	try {
+		const text = $("coupon-text").value.trim();
+		if (!text) throw new Error("Cole o texto do cupom.");
+		const platform = $("coupon-platform").value || undefined;
+		await api("/api/coupons", { method: "POST", body: JSON.stringify({ text, platform }) });
+		$("coupon-text").value = "";
+		toast("Cupom salvo");
+		loadCoupons();
+	} catch (e) {
+		$("coupon-error").textContent = e.message;
+	}
+});
+
+$("btn-refresh-coupons").addEventListener("click", loadCoupons);
+
+async function loadCoupons() {
+	const box = $("coupons-list");
+	box.innerHTML = '<p class="hint">Carregando…</p>';
+	try {
+		const { coupons } = await api("/api/coupons");
+		if (!coupons.length) {
+			box.innerHTML = '<p class="hint">Nenhum cupom. Cole um acima ou conecte o coletor do Telegram.</p>';
+			return;
+		}
+		box.innerHTML = "";
+		coupons.forEach((c) => box.appendChild(renderCoupon(c)));
+	} catch (e) {
+		box.innerHTML = `<p class="error">${escapeHtml(e.message)}</p>`;
+	}
+}
+
+function renderCoupon(c) {
+	const div = document.createElement("div");
+	div.className = "offer-item" + (c.active ? "" : " ");
+	const label = c.code || (c.offValue ? `${c.offValue} OFF ${c.description || "TODAS AS LOJAS"}` : "—");
+	const flags = [
+		c.platform ? c.platform : "qualquer plataforma",
+		c.isFlash ? "⚡ relâmpago" + (c.validUntil ? " até " + c.validUntil : "") : null,
+		"via " + (c.source || "manual") + (c.channel ? " @" + c.channel : ""),
+	].filter(Boolean);
+	div.innerHTML = `
+		<div class="row" style="justify-content:space-between">
+			<strong>${escapeHtml(label)}</strong>
+			<span class="pill ${c.active ? "ok" : "no"}">${c.active ? "ativo" : "inativo"}</span>
+		</div>
+		<div class="meta">${flags.map((f) => `<span>${escapeHtml(f)}</span>`).join("")}</div>`;
+	const actions = document.createElement("div");
+	actions.className = "actions";
+	actions.appendChild(mkBtn(c.active ? "Desativar" : "Ativar", "ghost", () => toggleCoupon(c.id, !c.active)));
+	actions.appendChild(mkBtn("Excluir", "danger", () => removeCoupon(c.id)));
+	div.appendChild(actions);
+	return div;
+}
+
+async function toggleCoupon(id, active) {
+	await api(`/api/coupons/${id}`, { method: "PATCH", body: JSON.stringify({ active }) });
+	loadCoupons();
+}
+
+async function removeCoupon(id) {
+	if (!confirm("Excluir este cupom?")) return;
+	await api(`/api/coupons/${id}`, { method: "DELETE" });
+	toast("Excluído");
+	loadCoupons();
 }
 
 // init

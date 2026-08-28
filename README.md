@@ -12,9 +12,26 @@ Roda em **Cloudflare Workers** + **D1**.
 | --- | --- | --- |
 | **Gerador de anúncios** — 3 variações fiéis ao agente (cálculo de desconto, regras de desconto baixo, cupom, links de resgate por plataforma, relâmpago, espaçamento) | ✅ | `src/generator/` |
 | **Agendamento** — cria/agenda ofertas, lista, marca como enviada, cron de "prontas para disparo" | ✅ | `src/data/db.ts`, `src/index.ts` |
-| **Interface web** — coletar → gerar → escolher variação → agendar | ✅ | `public/` |
-| **Fontes de afiliados** (Shopee/ML) | 🔌 adaptadores prontos, precisam de credenciais | `src/sources/` |
+| **Interface web** — coletar → gerar → escolher variação → agendar + aba de cupons | ✅ | `public/` |
+| **Fontes de afiliados** (Shopee/ML) — com tag de afiliado no link | 🔌 adaptadores prontos, precisam de credenciais | `src/sources/` |
+| **Cupons especiais** — parser, armazenamento e auto-anexar por plataforma | ✅ | `src/coupons/`, `src/data/coupons.ts` |
+| **Coletor do Telegram** — lê canais oficiais (MTProto) e envia cupons | ✅ serviço Node separado | `collector/` |
 | **Disparo no WhatsApp** | ✋ manual (copiar/colar); interface `Dispatcher` pronta para automação futura | `src/whatsapp/` |
+
+## Arquitetura
+
+```
+Afiliados Shopee/ML ─┐
+                     ├─► Worker (Cloudflare) ──► gera 3 variações ──► agenda ──► você copia p/ WhatsApp
+Canais Telegram  ────┘         │  D1: ofertas + cupons
+ (coletor Node/MTProto) ──POST /api/coupons/ingest──►┘
+```
+
+O **coletor do Telegram** roda separado (pasta `collector/`, veja o README de
+lá) porque ler canais oficiais de terceiros exige sessão de usuário (MTProto),
+que não roda no Worker. Ele envia os cupons para `/api/coupons/ingest`, e o
+cupom ativo mais recente de cada plataforma é **anexado automaticamente** às
+ofertas daquela plataforma.
 
 ## Fluxo
 
@@ -48,7 +65,20 @@ coleta manual funciona normalmente.
 npx wrangler secret put SHOPEE_APP_ID
 npx wrangler secret put SHOPEE_APP_SECRET
 npx wrangler secret put MELI_ACCESS_TOKEN
+
+# Tag de afiliado aplicada aos links (opcional)
+npx wrangler secret put SHOPEE_SUB_ID
+npx wrangler secret put MELI_AFFILIATE_TAG
+
+# Token que protege a ingestão de cupons do coletor do Telegram
+npx wrangler secret put INGEST_TOKEN
 ```
+
+### Coletor do Telegram (cupons especiais)
+
+Os cupons vêm dos canais oficiais no Telegram, coletados por um serviço Node
+separado. Veja **`collector/README.md`** para configurar (login MTProto,
+canais e endpoint). Ele envia os cupons para `/api/coupons/ingest`.
 
 ## API
 
@@ -62,6 +92,12 @@ npx wrangler secret put MELI_ACCESS_TOKEN
 | `GET` | `/api/offers/:id` | Detalhe. |
 | `PATCH` | `/api/offers/:id` | Atualiza status/agendamento/seleção/grupos (`markSent:true`). |
 | `DELETE` | `/api/offers/:id` | Remove. |
+| `POST` | `/api/coupons/ingest` | Ingestão de cupom (coletor). Protegido por `INGEST_TOKEN`. Corpo: `{ text, platform?, channel?, source? }`. |
+| `GET` | `/api/coupons` | Lista cupons (`?platform=&active=1`). |
+| `POST` | `/api/coupons` | Cadastra cupom manualmente (aceita `text` para parse). |
+| `GET` | `/api/coupons/active?platform=` | Cupom ativo mais recente da plataforma. |
+| `PATCH` | `/api/coupons/:id` | Ativa/desativa (`{ active }`). |
+| `DELETE` | `/api/coupons/:id` | Remove. |
 
 ### Exemplo — gerar um anúncio
 

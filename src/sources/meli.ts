@@ -12,6 +12,7 @@
 import type { Env } from "../types";
 import type { Offer } from "../generator/types";
 import type { FetchOffersParams, OfferSourceAdapter } from "./types";
+import { applyAffiliate } from "./affiliate";
 
 const MELI_API = "https://api.mercadolibre.com";
 const SITE_ID = "MLB"; // Brasil
@@ -43,7 +44,7 @@ export class MeliAffiliateSource implements OfferSourceAdapter {
 			throw new Error(`Mercado Livre respondeu ${res.status}: ${await res.text()}`);
 		}
 		const json = (await res.json()) as { results?: MeliItem[] };
-		return (json.results ?? []).map(meliItemToOffer);
+		return (json.results ?? []).map((item) => meliItemToOffer(item, this.env));
 	}
 }
 
@@ -55,13 +56,13 @@ interface MeliItem {
 	shipping?: { free_shipping?: boolean };
 }
 
-function meliItemToOffer(item: MeliItem): Offer {
+function meliItemToOffer(item: MeliItem, env: Env): Offer {
 	const hasOld = typeof item.original_price === "number" && (item.original_price as number) > item.price;
 	return {
 		productName: item.title,
 		price: item.price,
 		oldPrice: hasOld ? (item.original_price as number) : undefined,
-		link: item.permalink,
+		link: applyAffiliate(item.permalink, "meli", env),
 		platform: "meli",
 		offerType: hasOld ? "relampago" : "padrao",
 		category: "generico",

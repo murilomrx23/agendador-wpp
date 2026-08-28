@@ -16,6 +16,13 @@ export interface Env {
 	SHOPEE_APP_ID?: string;
 	SHOPEE_APP_SECRET?: string;
 	MELI_ACCESS_TOKEN?: string;
+
+	/** Tags de afiliado aplicadas aos links de compra — opcionais. */
+	SHOPEE_SUB_ID?: string;
+	MELI_AFFILIATE_TAG?: string;
+
+	/** Token que protege o endpoint de ingestão de cupons (coletor Telegram). */
+	INGEST_TOKEN?: string;
 }
 
 /**

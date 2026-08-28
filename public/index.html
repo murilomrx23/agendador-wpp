@@ -107,6 +107,7 @@
 			<div class="tabs">
 				<div class="tab active" data-tab="nova">Nova oferta</div>
 				<div class="tab" data-tab="agendadas">Agendadas</div>
+				<div class="tab" data-tab="cupons">Cupons</div>
 			</div>
 
 			<!-- NOVA OFERTA -->
@@ -218,6 +219,7 @@
 
 				<div class="card" id="variations-card" style="display:none">
 					<h2>3. Escolha a variação</h2>
+					<div id="applied-coupon" class="hint" style="margin-bottom:0.5rem"></div>
 					<div class="variations" id="variations"></div>
 				</div>
 
@@ -251,6 +253,39 @@
 						<button type="button" class="ghost" id="btn-filter-all">Todas</button>
 					</div>
 					<div id="offers-list"><p class="hint">Carregando…</p></div>
+				</div>
+			</section>
+
+			<!-- CUPONS -->
+			<section id="tab-cupons" style="display:none">
+				<div class="card">
+					<h2>Adicionar cupom especial</h2>
+					<div class="field">
+						<label>Cole o texto do cupom (Telegram/Instagram) — o sistema extrai os dados</label>
+						<textarea id="coupon-text" rows="3" placeholder="Ex.: 🎟️ CUPOM SHOPEE — Use o cupom CUPOM70, R$70 OFF acima de R$300, válido até 23h59"></textarea>
+					</div>
+					<div class="grid-3">
+						<div class="field">
+							<label>Plataforma (opcional)</label>
+							<select id="coupon-platform">
+								<option value="">Detectar/qualquer</option>
+								<option value="shopee">Shopee</option>
+								<option value="meli">Mercado Livre</option>
+							</select>
+						</div>
+						<div class="field" style="display:flex; align-items:flex-end">
+							<button type="button" id="btn-add-coupon">Salvar cupom</button>
+						</div>
+					</div>
+					<div class="hint">Os cupons coletados do Telegram aparecem aqui automaticamente. O cupom ativo mais recente de cada plataforma é anexado às ofertas daquela plataforma.</div>
+					<div class="error" id="coupon-error"></div>
+				</div>
+				<div class="card">
+					<h2>Cupons ativos</h2>
+					<div class="actions" style="margin-bottom:0.75rem">
+						<button type="button" class="secondary" id="btn-refresh-coupons">Atualizar</button>
+					</div>
+					<div id="coupons-list"><p class="hint">Carregando…</p></div>
 				</div>
 			</section>
 		</div>

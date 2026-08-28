@@ -21,9 +21,12 @@
  */
 import { Env } from "./types";
 import { generateAd } from "./generator/generate";
-import type { Offer } from "./generator/types";
+import type { Coupon, Offer, Platform } from "./generator/types";
 import { OfferRepo, type CreateOfferInput, type OfferStatus } from "./data/db";
+import { CouponRepo, toGeneratorCoupon, type CouponSource } from "./data/coupons";
+import { parseCoupon } from "./coupons/parse";
 import { detectPlatform } from "./generator/format";
+import { applyAffiliate } from "./sources/affiliate";
 import { getSource, getSources } from "./sources";
 import { ManualDispatcher } from "./whatsapp/dispatcher";
 
@@ -86,9 +89,50 @@ async function route(request: Request, env: Env, url: URL): Promise<Response> {
 
 	// POST /api/generate — gera as 3 variações sem persistir.
 	if (path === "/api/generate" && method === "POST") {
-		const body = (await request.json()) as Offer;
-		const ad = generateAd(body);
-		return json(ad);
+		const body = (await request.json()) as GenerateBody;
+		const { offer, appliedCoupon } = await withAutoCoupon(env, body);
+		const ad = generateAd(offer);
+		return json({ ...ad, offer, appliedCoupon });
+	}
+
+	// /api/coupons ...
+	if (path === "/api/coupons/ingest" && method === "POST") {
+		return ingestCoupon(request, env);
+	}
+	if (path === "/api/coupons/active" && method === "GET") {
+		const repo = new CouponRepo(requireDb(env));
+		const platform = url.searchParams.get("platform") as Platform | null;
+		if (!platform) return error("Informe ?platform=shopee|meli", 400);
+		return json({ coupon: await repo.latestActiveForPlatform(platform) });
+	}
+	if (path === "/api/coupons") {
+		const repo = new CouponRepo(requireDb(env));
+		if (method === "GET") {
+			const platform = (url.searchParams.get("platform") as Platform | null) ?? undefined;
+			const activeParam = url.searchParams.get("active");
+			const active = activeParam == null ? undefined : activeParam === "1";
+			return json({ coupons: await repo.list({ platform, active }) });
+		}
+		if (method === "POST") {
+			const body = (await request.json()) as IngestBody;
+			return json(await saveCoupon(repo, body, "manual"), 201);
+		}
+		return error("Método não permitido.", 405);
+	}
+	const couponIdMatch = path.match(/^\/api\/coupons\/([^/]+)$/);
+	if (couponIdMatch) {
+		const repo = new CouponRepo(requireDb(env));
+		const id = couponIdMatch[1];
+		if (method === "PATCH") {
+			const { active } = (await request.json()) as { active: boolean };
+			const rec = await repo.setActive(id, !!active);
+			return rec ? json(rec) : error("Cupom não encontrado.", 404);
+		}
+		if (method === "DELETE") {
+			const ok = await repo.remove(id);
+			return ok ? json({ ok: true }) : error("Cupom não encontrado.", 404);
+		}
+		return error("Método não permitido.", 405);
 	}
 
 	// GET /api/sources — lista fontes e status de configuração.
@@ -124,7 +168,7 @@ async function route(request: Request, env: Env, url: URL): Promise<Response> {
 		}
 		if (method === "POST") {
 			const body = (await request.json()) as CreateOfferBody;
-			return json(await createOffer(repo, body), 201);
+			return json(await createOffer(repo, env, body), 201);
 		}
 		return error("Método não permitido.", 405);
 	}
@@ -152,7 +196,12 @@ async function route(request: Request, env: Env, url: URL): Promise<Response> {
 	return error("Rota não encontrada.", 404);
 }
 
-interface CreateOfferBody extends Offer {
+interface GenerateBody extends Offer {
+	/** Desliga o auto-anexar de cupom por plataforma (padrão: ligado). */
+	autoCoupon?: boolean;
+}
+
+interface CreateOfferBody extends GenerateBody {
 	/** Índice da variação escolhida (0..2). */
 	selectedIndex?: number;
 	/** Grupos de WhatsApp de destino. */
@@ -165,23 +214,56 @@ interface CreateOfferBody extends Offer {
 	source?: CreateOfferInput["source"];
 }
 
+/**
+ * Aplica a tag de afiliado ao link e, quando `autoCoupon` estiver ligado e a
+ * oferta não trouxer cupom próprio, anexa o cupom ativo mais recente da
+ * plataforma (mudando o tipo para "cupom"). Retorna a oferta ajustada e o
+ * cupom aplicado, se houver.
+ */
+async function withAutoCoupon(
+	env: Env,
+	body: GenerateBody,
+): Promise<{ offer: Offer; appliedCoupon: Coupon | null }> {
+	const platform: Platform = detectPlatform(body.link, body.platform);
+	const offer: Offer = {
+		...body,
+		platform,
+		link: applyAffiliate(body.link, platform, env),
+	};
+
+	// Já tem cupom explícito ou auto desligado ou sem DB: nada a fazer.
+	if (offer.coupon || body.autoCoupon === false || !env.DB) {
+		return { offer, appliedCoupon: offer.coupon ?? null };
+	}
+
+	const repo = new CouponRepo(env.DB);
+	const rec = await repo.latestActiveForPlatform(platform);
+	if (!rec) return { offer, appliedCoupon: null };
+
+	const coupon = toGeneratorCoupon(rec);
+	return {
+		offer: { ...offer, coupon, offerType: "cupom" },
+		appliedCoupon: coupon,
+	};
+}
+
 /** Cria/agenda uma oferta, gerando as variações se necessário. */
-async function createOffer(repo: OfferRepo, body: CreateOfferBody) {
+async function createOffer(repo: OfferRepo, env: Env, body: CreateOfferBody) {
+	const { offer } = await withAutoCoupon(env, body);
 	const variations = body.variations && body.variations.length === 3
 		? body.variations
-		: generateAd(body).variations;
+		: generateAd(offer).variations;
 
-	const platform = detectPlatform(body.link, body.platform);
 	const input: CreateOfferInput = {
-		productName: body.productName,
-		price: body.price,
-		oldPrice: body.oldPrice ?? null,
-		link: body.link,
-		platform,
-		offerType: body.offerType || "padrao",
-		category: body.category ?? null,
-		freeShipping: !!body.freeShipping,
-		coupon: body.coupon ?? null,
+		productName: offer.productName,
+		price: offer.price,
+		oldPrice: offer.oldPrice ?? null,
+		link: offer.link,
+		platform: offer.platform as Platform,
+		offerType: offer.offerType || "padrao",
+		category: offer.category ?? null,
+		freeShipping: !!offer.freeShipping,
+		coupon: offer.coupon ?? null,
 		variations,
 		selectedIndex: clampIndex(body.selectedIndex),
 		groups: body.groups ?? [],
@@ -193,6 +275,54 @@ async function createOffer(repo: OfferRepo, body: CreateOfferBody) {
 	// Prepara a mensagem selecionada (disparo manual).
 	const dispatch = await new ManualDispatcher().dispatch(record);
 	return { offer: record, dispatch };
+}
+
+interface IngestBody {
+	text?: string;
+	platform?: Platform;
+	code?: string;
+	offValue?: string;
+	description?: string;
+	isFlash?: boolean;
+	validUntil?: string;
+	channel?: string;
+	expiresAt?: number | null;
+}
+
+/** Salva um cupom, fazendo parse do texto e evitando duplicatas recentes. */
+async function saveCoupon(repo: CouponRepo, body: IngestBody, source: CouponSource) {
+	const parsed = body.text ? parseCoupon(body.text) : null;
+	const input = {
+		platform: body.platform ?? parsed?.platform ?? null,
+		code: body.code ?? parsed?.code ?? null,
+		offValue: body.offValue ?? parsed?.offValue ?? null,
+		description: body.description ?? parsed?.description ?? null,
+		isFlash: body.isFlash ?? parsed?.isFlash ?? false,
+		validUntil: body.validUntil ?? parsed?.validUntil ?? null,
+		channel: body.channel ?? null,
+		raw: body.text ?? null,
+		expiresAt: body.expiresAt ?? null,
+		source,
+	};
+	if (!input.code && !input.offValue) {
+		throw new Error("Cupom sem código nem valor: nada a salvar.");
+	}
+	const dup = await repo.findRecentDuplicate(input);
+	if (dup) return { coupon: dup, duplicate: true };
+	return { coupon: await repo.create(input), duplicate: false };
+}
+
+/** Endpoint de ingestão do coletor (Telegram/Instagram), protegido por token. */
+async function ingestCoupon(request: Request, env: Env): Promise<Response> {
+	if (env.INGEST_TOKEN) {
+		const auth = request.headers.get("authorization") || "";
+		const token = auth.replace(/^Bearer\s+/i, "");
+		if (token !== env.INGEST_TOKEN) return error("Não autorizado.", 401);
+	}
+	const repo = new CouponRepo(requireDb(env));
+	const body = (await request.json()) as IngestBody & { source?: CouponSource };
+	const result = await saveCoupon(repo, body, body.source ?? "telegram");
+	return json(result, result.duplicate ? 200 : 201);
 }
 
 interface PatchOfferBody {
