@@ -25,13 +25,25 @@ npm run login
 # copie o TELEGRAM_SESSION=... para o .env
 
 # 2. Configure os canais e o endpoint do Worker no .env
-#    TELEGRAM_CHANNELS=shopee_brasil, ofertasmercadolivre
+#    TELEGRAM_CHANNELS=afiliadosshopeebroficial, https://t.me/+iUwhewgG9bg3N2Yx
 #    INGEST_URL=https://ofertas-bot.SEU.workers.dev/api/coupons/ingest
 #    INGEST_TOKEN=...  (o mesmo secret configurado no Worker)
 
 # 3. Rode
 npm start
 ```
+
+### Canais oficiais (já configurados no .env.example)
+
+| Plataforma | Link | Tipo |
+| --- | --- | --- |
+| Shopee | `afiliadosshopeebroficial` (t.me/afiliadosshopeebroficial) | público |
+| Mercado Livre | `https://t.me/+iUwhewgG9bg3N2Yx` | convite privado |
+
+O coletor aceita **username público** ou **link de convite privado**
+(`t.me/+hash`). Para canais privados ele **entra automaticamente** pelo convite
+usando a sua conta (se já for membro, apenas resolve o canal) e passa a
+monitorar por ID — por isso funciona mesmo sem username público.
 
 O coletor faz um *backfill* leve (últimas mensagens) ao iniciar e depois
 escuta em tempo real. Só encaminha mensagens que **parecem cupom**; o parse e a

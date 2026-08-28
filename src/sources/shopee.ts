@@ -1,23 +1,39 @@
 /**
  * Adaptador da Shopee Affiliate (Open API / GraphQL).
  *
- * A Shopee expõe uma GraphQL API para afiliados em:
- *   https://open-api.affiliate.shopee.com.br/graphql
- * A autenticação usa um header `Authorization` no formato:
- *   SHA256 Credential={appId}, Timestamp={ts}, Signature={sig}
- * onde `sig = sha256(appId + timestamp + payload + appSecret)`.
+ * Endpoint:  https://open-api.affiliate.shopee.com.br/graphql
+ * Auth:      header Authorization no formato
+ *            SHA256 Credential={appId}, Timestamp={ts}, Signature={sig}
+ *            onde sig = sha256(appId + timestamp + payload + appSecret).
  *
- * Este adaptador implementa a assinatura e a query de ofertas. Basta
- * configurar as credenciais (SHOPEE_APP_ID / SHOPEE_APP_SECRET) como secrets
- * do Worker para ativá-lo. Enquanto não configurado, `fetchOffers` lança um
- * erro explicativo e a coleta manual segue funcionando normalmente.
+ * Usa a query `productOfferV2`, que devolve ofertas de produtos com link de
+ * afiliado (`offerLink`) e a taxa de desconto (`priceDiscountRate`), da qual
+ * derivamos o valor antigo. Ative com os secrets SHOPEE_APP_ID /
+ * SHOPEE_APP_SECRET. Sem eles, `fetchOffers` lança erro explicativo e a coleta
+ * manual segue funcionando.
  */
 import type { Env } from "../types";
-import type { Offer } from "../generator/types";
+import type { Category, Offer } from "../generator/types";
 import type { FetchOffersParams, OfferSourceAdapter } from "./types";
 import { applyAffiliate } from "./affiliate";
+import { guessCategory } from "./category";
 
 const SHOPEE_GRAPHQL = "https://open-api.affiliate.shopee.com.br/graphql";
+
+/** Nó de produto retornado por productOfferV2 (campos que usamos). */
+export interface ShopeeNode {
+	productName: string;
+	price?: string;
+	priceMin?: string;
+	priceMax?: string;
+	/** Percentual de desconto (inteiro, ex.: 44). */
+	priceDiscountRate?: number | string;
+	offerLink?: string;
+	productLink?: string;
+	imageUrl?: string;
+	ratingStar?: string;
+	productCatIds?: number[];
+}
 
 /** Gera a assinatura SHA256 exigida pela Shopee Affiliate API. */
 async function signPayload(
@@ -32,6 +48,42 @@ async function signPayload(
 	return [...new Uint8Array(digest)]
 		.map((b) => b.toString(16).padStart(2, "0"))
 		.join("");
+}
+
+/**
+ * Converte um nó da Shopee em `Offer`. Deriva o valor antigo a partir da taxa
+ * de desconto (`price = old * (1 - rate/100)`), quando disponível.
+ */
+export function mapShopeeNode(n: ShopeeNode, tag?: string): Offer {
+	const price = parseFloat(n.price ?? n.priceMin ?? "0");
+	const rate = Number(n.priceDiscountRate ?? 0);
+	let oldPrice: number | undefined;
+	if (rate > 0 && rate < 100 && isFinite(price) && price > 0) {
+		oldPrice = Math.round((price / (1 - rate / 100)) * 100) / 100;
+	}
+	const rawLink = n.offerLink || n.productLink || "";
+	const link = tag ? applyAffiliateTag(rawLink, tag) : rawLink;
+	const category: Category = guessCategory(n.productName);
+	return {
+		productName: n.productName,
+		price: isFinite(price) ? price : 0,
+		oldPrice,
+		link,
+		platform: "shopee",
+		offerType: "padrao",
+		category,
+	};
+}
+
+/** Anexa sub_id sem sobrescrever, tolerante a links inválidos. */
+function applyAffiliateTag(link: string, subId: string): string {
+	try {
+		const url = new URL(link);
+		if (!url.searchParams.has("sub_id")) url.searchParams.set("sub_id", subId);
+		return url.toString();
+	} catch {
+		return link;
+	}
 }
 
 export class ShopeeAffiliateSource implements OfferSourceAdapter {
@@ -54,11 +106,15 @@ export class ShopeeAffiliateSource implements OfferSourceAdapter {
 		const appSecret = this.env.SHOPEE_APP_SECRET as string;
 		const limit = Math.min(params.limit ?? 20, 50);
 
-		// Query de ofertas de produtos (productOfferV2). Ajuste os campos
-		// conforme a documentação vigente da sua conta de afiliado.
-		const query = `query { productOfferV2(listType: 0, sortType: 2, limit: ${limit}${
-			params.keyword ? `, keyword: ${JSON.stringify(params.keyword)}` : ""
-		}) { nodes { productName priceMin priceMax price offerLink imageUrl productCatIds ratingStar } } }`;
+		// sortType 2 = mais vendidos. Ajuste conforme sua estratégia.
+		const args = [
+			"sortType: 2",
+			`limit: ${limit}`,
+			params.keyword ? `keyword: ${JSON.stringify(params.keyword)}` : "",
+		]
+			.filter(Boolean)
+			.join(", ");
+		const query = `query { productOfferV2(${args}) { nodes { productName price priceMin priceMax priceDiscountRate offerLink productLink imageUrl ratingStar productCatIds } pageInfo { page limit hasNextPage } } }`;
 
 		const payload = JSON.stringify({ query });
 		const timestamp = Math.floor(Date.now() / 1000);
@@ -83,26 +139,6 @@ export class ShopeeAffiliateSource implements OfferSourceAdapter {
 			throw new Error(`Shopee Afiliados erro: ${JSON.stringify(json.errors)}`);
 		}
 		const nodes = json.data?.productOfferV2?.nodes ?? [];
-		return nodes.map((n) => shopeeNodeToOffer(n, this.env));
+		return nodes.map((n) => mapShopeeNode(n, this.env.SHOPEE_SUB_ID));
 	}
-}
-
-interface ShopeeNode {
-	productName: string;
-	price?: string;
-	priceMin?: string;
-	priceMax?: string;
-	offerLink: string;
-}
-
-function shopeeNodeToOffer(n: ShopeeNode, env: Env): Offer {
-	const price = parseFloat(n.price ?? n.priceMin ?? "0");
-	return {
-		productName: n.productName,
-		price: isFinite(price) ? price : 0,
-		link: applyAffiliate(n.offerLink, "shopee", env),
-		platform: "shopee",
-		offerType: "padrao",
-		category: "generico",
-	};
 }

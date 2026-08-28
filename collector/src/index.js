@@ -1,14 +1,14 @@
 /**
- * Coletor de cupons especiais do Telegram.
+ * Coletor de cupons especiais dos canais oficiais do Telegram.
  *
- * Conecta com a sua sessão de usuário, monitora os canais oficiais
- * configurados (TELEGRAM_CHANNELS), filtra mensagens que parecem cupons e as
- * envia (texto cru) para o endpoint /api/coupons/ingest do Worker, que faz o
- * parse e a deduplicação centralizados.
+ * Conecta com a sua sessão de usuário, resolve os canais configurados
+ * (aceita username público OU link de convite privado t.me/+hash), monitora
+ * suas mensagens, filtra o que parece cupom e envia (texto cru) para o
+ * endpoint /api/coupons/ingest do Worker, que faz o parse e a deduplicação.
  *
  *   npm start
  */
-import { TelegramClient } from "telegram";
+import { TelegramClient, Api } from "telegram";
 import { StringSession } from "telegram/sessions/index.js";
 import { NewMessage } from "telegram/events/index.js";
 import "dotenv/config";
@@ -31,15 +31,27 @@ if (!INGEST_URL) {
 	process.exit(1);
 }
 
-const channels = (TELEGRAM_CHANNELS || "")
+const channelEntries = (TELEGRAM_CHANNELS || "")
 	.split(",")
-	.map((s) => s.trim().replace(/^@/, "").toLowerCase())
+	.map((s) => s.trim())
 	.filter(Boolean);
 
 /** Heurística leve: só encaminha o que parece cupom (o parse fica no Worker). */
 function looksLikeCoupon(text) {
 	const t = text.toLowerCase();
 	return /cupom|c[oó]digo|\d+\s*%|r\$\s*\d+|\boff\b/.test(t);
+}
+
+/** Extrai o hash de um link de convite (t.me/+hash, /joinchat/hash, ou +hash). */
+function inviteHash(entry) {
+	const m = entry.match(/(?:t\.me\/\+|t\.me\/joinchat\/|^\+)([A-Za-z0-9_-]+)/);
+	return m ? m[1] : null;
+}
+
+/** Normaliza um username público (remove @, URL). */
+function publicUsername(entry) {
+	const m = entry.match(/(?:t\.me\/|@)?([A-Za-z0-9_]{4,})$/);
+	return m ? m[1] : null;
 }
 
 async function postIngest(text, channel) {
@@ -60,16 +72,6 @@ async function postIngest(text, channel) {
 	}
 }
 
-/** Resolve o username do chat de uma mensagem (quando disponível). */
-async function chatUsername(message) {
-	try {
-		const chat = await message.getChat();
-		return chat?.username ? String(chat.username).toLowerCase() : undefined;
-	} catch {
-		return undefined;
-	}
-}
-
 const client = new TelegramClient(
 	new StringSession(TELEGRAM_SESSION),
 	Number(TELEGRAM_API_ID),
@@ -79,33 +81,74 @@ const client = new TelegramClient(
 
 await client.connect();
 console.log("Conectado ao Telegram.");
-console.log(
-	channels.length
-		? `Monitorando canais: ${channels.join(", ")}`
-		: "Monitorando TODOS os canais/chats (defina TELEGRAM_CHANNELS para filtrar).",
-);
 
-// Backfill leve: pega mensagens recentes dos canais ao iniciar.
-for (const uname of channels) {
+/** Resolve cada entrada em uma entidade, entrando em convites privados. */
+async function resolveChannels() {
+	const resolved = [];
+	for (const entry of channelEntries) {
+		const hash = inviteHash(entry);
+		try {
+			if (hash) {
+				// Link de convite privado: tenta entrar (ok se já for membro).
+				try {
+					await client.invoke(new Api.messages.ImportChatInvite({ hash }));
+				} catch (e) {
+					if (!/already|USER_ALREADY_PARTICIPANT/i.test(e.message || "")) {
+						// CheckChatInvite ainda resolve a entidade se já for membro.
+					}
+				}
+				const info = await client.invoke(new Api.messages.CheckChatInvite({ hash }));
+				const chat = info.chat || (info.chats && info.chats[0]);
+				if (chat) {
+					const entity = await client.getEntity(chat);
+					resolved.push({ entity, label: entity.title || `+${hash.slice(0, 6)}` });
+					continue;
+				}
+			}
+			const uname = publicUsername(entry);
+			if (uname) {
+				const entity = await client.getEntity(uname);
+				resolved.push({ entity, label: uname });
+			}
+		} catch (err) {
+			console.error(`Não consegui resolver "${entry}":`, err.message);
+		}
+	}
+	return resolved;
+}
+
+const targets = await resolveChannels();
+if (!targets.length) {
+	console.error("Nenhum canal resolvido. Verifique TELEGRAM_CHANNELS e se sua conta tem acesso.");
+	process.exit(1);
+}
+console.log("Monitorando: " + targets.map((t) => t.label).join(", "));
+
+// Backfill leve: últimas mensagens de cada canal.
+for (const t of targets) {
 	try {
-		const messages = await client.getMessages(uname, { limit: 15 });
+		const messages = await client.getMessages(t.entity, { limit: 15 });
 		for (const m of messages.reverse()) {
-			if (m?.message && looksLikeCoupon(m.message)) await postIngest(m.message, uname);
+			if (m?.message && looksLikeCoupon(m.message)) await postIngest(m.message, t.label);
 		}
 	} catch (err) {
-		console.error(`Não consegui ler @${uname}:`, err.message);
+		console.error(`Falha no backfill de ${t.label}:`, err.message);
 	}
 }
 
-// Tempo real: novas mensagens.
+// Tempo real, filtrando pelos canais resolvidos (funciona p/ públicos e privados).
 client.addEventHandler(async (event) => {
 	const msg = event.message;
 	const text = msg?.message;
-	if (!text) return;
-	const uname = await chatUsername(msg);
-	if (channels.length && (!uname || !channels.includes(uname))) return;
-	if (!looksLikeCoupon(text)) return;
-	await postIngest(text, uname);
-}, new NewMessage({}));
+	if (!text || !looksLikeCoupon(text)) return;
+	let label;
+	try {
+		const chat = await msg.getChat();
+		label = targets.find((t) => t.entity.id?.value === chat?.id?.value)?.label;
+	} catch {
+		/* ignore */
+	}
+	await postIngest(text, label);
+}, new NewMessage({ chats: targets.map((t) => t.entity) }));
 
 console.log("Aguardando novos cupons… (Ctrl+C para sair)");
