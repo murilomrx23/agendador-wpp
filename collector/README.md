@@ -42,10 +42,3 @@ deduplicação ficam centralizados no Worker (`/api/coupons/ingest`).
 - Nunca versione o `.env` nem a `TELEGRAM_SESSION` (equivale à sua conta).
 - Defina `INGEST_TOKEN` no Worker (`wrangler secret put INGEST_TOKEN`) e o mesmo
   valor aqui, para que só o coletor consiga inserir cupons.
-
-## Instagram (próximo passo)
-
-O Instagram das páginas oficiais pode virar outra fonte com a mesma ideia:
-um coletor que lê os posts/stories e faz `POST /api/coupons/ingest` com
-`source: "instagram"`. Não incluído aqui por exigir abordagem própria
-(API/scraping do Instagram).

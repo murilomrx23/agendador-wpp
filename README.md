@@ -134,7 +134,7 @@ Cobertura testada em `src/generator/generate.test.ts` (`npm test`).
 ## Próximos passos (adaptadores)
 
 - **Fontes**: preencher as queries de afiliado conforme sua conta (`src/sources/shopee.ts`, `meli.ts`).
-- **Telegram / Instagram** como fontes adicionais: implementar a interface `OfferSourceAdapter`.
+- **Mais canais do Telegram**: basta adicioná-los em `TELEGRAM_CHANNELS` no coletor.
 - **Disparo automático no WhatsApp**: implementar `Dispatcher` (ex.: Baileys/whatsapp-web.js num servidor Node, ou WhatsApp Cloud API) e chamá-lo no handler `scheduled`.
 
 ## Licença

@@ -312,7 +312,7 @@ async function saveCoupon(repo: CouponRepo, body: IngestBody, source: CouponSour
 	return { coupon: await repo.create(input), duplicate: false };
 }
 
-/** Endpoint de ingestão do coletor (Telegram/Instagram), protegido por token. */
+/** Endpoint de ingestão do coletor do Telegram, protegido por token. */
 async function ingestCoupon(request: Request, env: Env): Promise<Response> {
 	if (env.INGEST_TOKEN) {
 		const auth = request.headers.get("authorization") || "";

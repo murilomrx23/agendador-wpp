@@ -1,4 +1,4 @@
--- Cupons especiais coletados (Telegram/Instagram) ou cadastrados manualmente.
+-- Cupons especiais coletados dos canais oficiais do Telegram ou manuais.
 -- Aplique com: wrangler d1 migrations apply ofertas-db
 
 CREATE TABLE IF NOT EXISTS coupons (
@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS coupons (
   description   TEXT,                -- ex.: "TODAS AS LOJAS"
   is_flash      INTEGER NOT NULL DEFAULT 0,
   valid_until   TEXT,                -- horário para cupom relâmpago (ex.: "18h")
-  source        TEXT NOT NULL DEFAULT 'manual', -- telegram | instagram | manual
+  source        TEXT NOT NULL DEFAULT 'manual', -- telegram | manual
   channel       TEXT,                -- canal/página de origem
   raw           TEXT,                -- texto original
   expires_at    INTEGER,             -- epoch ms (opcional)

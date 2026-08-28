@@ -1,13 +1,13 @@
 /**
  * Repositório de cupons especiais (Cloudflare D1).
  *
- * Guarda os cupons coletados do Telegram/Instagram (ou manuais) e permite
- * consultar o cupom ativo mais recente por plataforma — usado para anexar
- * automaticamente às ofertas daquela plataforma.
+ * Guarda os cupons coletados dos canais oficiais do Telegram (ou cadastrados
+ * manualmente) e permite consultar o cupom ativo mais recente por plataforma —
+ * usado para anexar automaticamente às ofertas daquela plataforma.
  */
 import type { Coupon, Platform } from "../generator/types";
 
-export type CouponSource = "telegram" | "instagram" | "manual";
+export type CouponSource = "telegram" | "manual";
 
 export interface CouponRecord {
 	id: string;

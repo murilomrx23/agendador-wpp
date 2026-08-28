@@ -1,5 +1,5 @@
 /**
- * Parser de cupons especiais vindos de texto (Telegram/Instagram/manual).
+ * Parser de cupons especiais vindos de texto (canais do Telegram/manual).
  *
  * Extrai de uma mensagem: plataforma, código digitável, valor/percentual,
  * descrição, e se é cupom relâmpago (com horário de validade). Segue a mesma
