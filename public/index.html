@@ -3,117 +3,47 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Ofertas Bot — Coleta, geração e agendamento</title>
-		<style>
-			:root {
-				--brand: #128c7e;
-				--brand-dark: #075e54;
-				--accent: #25d366;
-				--bg: #f0f2f5;
-				--card: #ffffff;
-				--border: #e4e6eb;
-				--text: #111b21;
-				--muted: #667781;
-				--danger: #d93025;
-				--warn: #b7791f;
-			}
-			* { box-sizing: border-box; margin: 0; padding: 0; }
-			body {
-				font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-				background: var(--bg);
-				color: var(--text);
-				line-height: 1.5;
-			}
-			header {
-				background: var(--brand-dark);
-				color: #fff;
-				padding: 1rem 1.25rem;
-			}
-			header h1 { font-size: 1.2rem; }
-			header p { font-size: 0.85rem; opacity: 0.85; }
-			.wrap { max-width: 960px; margin: 0 auto; padding: 1.25rem; }
-			.tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
-			.tab {
-				padding: 0.5rem 1rem; border: 1px solid var(--border); background: var(--card);
-				border-radius: 999px; cursor: pointer; font-size: 0.9rem;
-			}
-			.tab.active { background: var(--brand); color: #fff; border-color: var(--brand); }
-			.card {
-				background: var(--card); border: 1px solid var(--border); border-radius: 12px;
-				padding: 1.25rem; margin-bottom: 1rem;
-			}
-			.card h2 { font-size: 1rem; margin-bottom: 0.75rem; }
-			label { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 0.25rem; }
-			input, select, textarea {
-				width: 100%; padding: 0.55rem 0.65rem; border: 1px solid var(--border);
-				border-radius: 8px; font: inherit; background: #fff;
-			}
-			.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
-			.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; }
-			.field { margin-bottom: 0.75rem; }
-			.row { display: flex; align-items: center; gap: 0.5rem; }
-			.row input[type="checkbox"] { width: auto; }
-			button {
-				background: var(--brand); color: #fff; border: none; padding: 0.6rem 1.1rem;
-				border-radius: 8px; font: inherit; cursor: pointer;
-			}
-			button:hover { background: var(--brand-dark); }
-			button.secondary { background: #fff; color: var(--brand); border: 1px solid var(--brand); }
-			button.ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
-			button.danger { background: #fff; color: var(--danger); border: 1px solid var(--danger); }
-			button:disabled { opacity: 0.5; cursor: not-allowed; }
-			.actions { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem; }
-			.variations { display: grid; gap: 0.75rem; }
-			.variation {
-				border: 2px solid var(--border); border-radius: 10px; padding: 0.75rem; cursor: pointer;
-			}
-			.variation.selected { border-color: var(--accent); background: #f0fff4; }
-			.variation .head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
-			.variation .tag { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.03em; }
-			pre {
-				white-space: pre-wrap; word-break: break-word; font-family: inherit;
-				font-size: 0.92rem; background: #fafafa; border-radius: 8px; padding: 0.65rem;
-			}
-			.hint { font-size: 0.78rem; color: var(--muted); margin-top: 0.25rem; }
-			.pill { display: inline-block; font-size: 0.72rem; padding: 0.1rem 0.5rem; border-radius: 999px; }
-			.pill.ok { background: #e6f4ea; color: #137333; }
-			.pill.no { background: #fce8e6; color: var(--danger); }
-			.pill.scheduled { background: #e8f0fe; color: #1967d2; }
-			.pill.ready { background: #fef7e0; color: var(--warn); }
-			.pill.sent { background: #e6f4ea; color: #137333; }
-			.pill.draft { background: #f1f3f4; color: var(--muted); }
-			.offer-item { border: 1px solid var(--border); border-radius: 10px; padding: 0.85rem; margin-bottom: 0.65rem; }
-			.offer-item.due { border-color: var(--warn); background: #fffdf5; }
-			.offer-item .meta { font-size: 0.8rem; color: var(--muted); display: flex; gap: 0.75rem; flex-wrap: wrap; margin: 0.35rem 0; }
-			.toast {
-				position: fixed; bottom: 1rem; left: 50%; transform: translateX(-50%);
-				background: #111b21; color: #fff; padding: 0.6rem 1rem; border-radius: 8px;
-				font-size: 0.85rem; opacity: 0; transition: opacity 0.2s; pointer-events: none;
-			}
-			.toast.show { opacity: 1; }
-			.error { color: var(--danger); font-size: 0.85rem; margin-top: 0.5rem; }
-			.cupom-fields { display: none; }
-			.cupom-fields.show { display: block; }
-			@media (max-width: 640px) { .grid, .grid-3 { grid-template-columns: 1fr; } }
-		</style>
+		<title>Ofertas Bot — Painel</title>
+		<link rel="stylesheet" href="styles.css" />
 	</head>
 	<body>
-		<header>
-			<h1>🛍️ Ofertas Bot</h1>
-			<p>Coleta ofertas &amp; cupons · gera o anúncio no padrão do seu agente · agenda o disparo</p>
+		<header class="topbar">
+			<div class="brand">🛍️ Ofertas Bot <span>coleta · gera · agenda</span></div>
+			<nav class="nav">
+				<button data-tab="dashboard" class="active">Painel</button>
+				<button data-tab="nova">Nova oferta</button>
+				<button data-tab="cupons">Cupons</button>
+				<button data-tab="agendadas">Agenda</button>
+			</nav>
 		</header>
 
 		<div class="wrap">
-			<div class="tabs">
-				<div class="tab active" data-tab="nova">Nova oferta</div>
-				<div class="tab" data-tab="agendadas">Agendadas</div>
-				<div class="tab" data-tab="cupons">Cupons</div>
-			</div>
+			<!-- DASHBOARD -->
+			<section id="tab-dashboard">
+				<div class="stats">
+					<div class="stat brand"><div class="v" id="st-scheduled">–</div><div class="l">Agendadas</div></div>
+					<div class="stat warn"><div class="v" id="st-ready">–</div><div class="l">Prontas p/ disparo</div></div>
+					<div class="stat info"><div class="v" id="st-coupons">–</div><div class="l">Cupons ativos</div></div>
+					<div class="stat ok"><div class="v" id="st-sent">–</div><div class="l">Enviadas</div></div>
+				</div>
+				<div class="card">
+					<h2>⏰ Prontas para disparo agora</h2>
+					<p class="sub">Chegou o horário — copie e cole nos grupos.</p>
+					<div id="due-list"><p class="hint">Carregando…</p></div>
+				</div>
+			</section>
 
 			<!-- NOVA OFERTA -->
-			<section id="tab-nova">
+			<section id="tab-nova" hidden>
+				<div class="steps" id="steps">
+					<div class="step active" data-step="1"><span class="dot">1</span> Coletar</div>
+					<div class="step" data-step="2"><span class="dot">2</span> Produto</div>
+					<div class="step" data-step="3"><span class="dot">3</span> Gerar</div>
+					<div class="step" data-step="4"><span class="dot">4</span> Agendar</div>
+				</div>
+
 				<div class="card">
-					<h2>1. Coletar oferta</h2>
+					<h2><span class="n">1</span> Coletar oferta</h2>
 					<div class="field">
 						<label>Fonte</label>
 						<select id="source">
@@ -121,16 +51,16 @@
 							<option value="shopee_affiliate">Shopee Afiliados</option>
 							<option value="meli_affiliate">Mercado Livre Afiliados</option>
 						</select>
-						<div class="hint" id="source-hint"></div>
+						<div class="hint source-status" id="source-hint"></div>
 					</div>
-					<div id="source-collect" style="display:none">
+					<div id="source-collect" hidden>
 						<div class="grid">
 							<div class="field">
 								<label>Palavra-chave (opcional)</label>
 								<input id="src-keyword" placeholder="ex.: organizador, fone..." />
 							</div>
 							<div class="field" style="display:flex; align-items:flex-end">
-								<button type="button" class="secondary" id="btn-collect">Coletar ofertas</button>
+								<button type="button" class="btn secondary" id="btn-collect">Coletar ofertas</button>
 							</div>
 						</div>
 						<div id="collect-results"></div>
@@ -138,20 +68,14 @@
 				</div>
 
 				<div class="card">
-					<h2>2. Dados do produto</h2>
+					<h2><span class="n">2</span> Dados do produto</h2>
 					<div class="field">
 						<label>Nome completo do produto</label>
 						<input id="productName" placeholder="Ex.: Organizador de Gavetas 6 Peças" />
 					</div>
 					<div class="grid-3">
-						<div class="field">
-							<label>Preço final (R$)</label>
-							<input id="price" inputmode="decimal" placeholder="49,90" />
-						</div>
-						<div class="field">
-							<label>Valor antigo (opcional)</label>
-							<input id="oldPrice" inputmode="decimal" placeholder="89,90" />
-						</div>
+						<div class="field"><label>Preço final (R$)</label><input id="price" inputmode="decimal" placeholder="49,90" /></div>
+						<div class="field"><label>Valor antigo (opcional)</label><input id="oldPrice" inputmode="decimal" placeholder="89,90" /></div>
 						<div class="field">
 							<label>Categoria</label>
 							<select id="category">
@@ -191,77 +115,53 @@
 							</select>
 						</div>
 						<div class="field" style="display:flex; align-items:flex-end">
-							<label class="row"><input type="checkbox" id="freeShipping" /> Frete grátis 🚚</label>
+							<label class="check"><input type="checkbox" id="freeShipping" /> Frete grátis 🚚</label>
 						</div>
 					</div>
 					<div class="cupom-fields" id="cupom-fields">
 						<div class="grid-3">
-							<div class="field">
-								<label>Código do cupom (digitável)</label>
-								<input id="couponCode" placeholder="CUPOM70" />
-							</div>
-							<div class="field">
-								<label>Ou valor/% do cupom</label>
-								<input id="couponValue" placeholder="20 ou 5%" />
-							</div>
-							<div class="field">
-								<label>Descrição do cupom</label>
-								<input id="couponDesc" placeholder="TODAS AS LOJAS" />
-							</div>
+							<div class="field"><label>Código do cupom</label><input id="couponCode" placeholder="CUPOM70" /></div>
+							<div class="field"><label>Ou valor/% do cupom</label><input id="couponValue" placeholder="20 ou 5%" /></div>
+							<div class="field"><label>Descrição do cupom</label><input id="couponDesc" placeholder="TODAS AS LOJAS" /></div>
 						</div>
-						<div class="hint">Se houver código, ele tem prioridade. Sem código, usa o valor/%. Shopee recebe link de resgate automático; Meli não.</div>
+						<div class="hint">Com código, ele tem prioridade. Sem cupom preenchido, o sistema anexa o cupom ativo da plataforma automaticamente.</div>
 					</div>
 					<div class="actions">
-						<button type="button" id="btn-generate">Gerar 3 variações</button>
+						<button type="button" class="btn" id="btn-generate">✨ Gerar 3 variações</button>
 					</div>
 					<div class="error" id="gen-error"></div>
 				</div>
 
-				<div class="card" id="variations-card" style="display:none">
-					<h2>3. Escolha a variação</h2>
-					<div id="applied-coupon" class="hint" style="margin-bottom:0.5rem"></div>
+				<div class="card" id="variations-card" hidden>
+					<h2><span class="n">3</span> Prévia no WhatsApp — escolha a variação</h2>
+					<div class="applied" id="applied-coupon" hidden></div>
 					<div class="variations" id="variations"></div>
 				</div>
 
-				<div class="card" id="schedule-card" style="display:none">
-					<h2>4. Agendar disparo</h2>
+				<div class="card" id="schedule-card" hidden>
+					<h2><span class="n">4</span> Agendar disparo</h2>
 					<div class="field">
 						<label>Grupos de WhatsApp (separe por vírgula)</label>
 						<input id="groups" placeholder="Ofertas VIP, Achadinhos, Promo Relâmpago" />
 					</div>
 					<div class="grid">
-						<div class="field">
-							<label>Data e hora do disparo</label>
-							<input id="scheduledAt" type="datetime-local" />
-						</div>
+						<div class="field"><label>Data e hora do disparo</label><input id="scheduledAt" type="datetime-local" /></div>
 						<div class="field" style="display:flex; align-items:flex-end; gap:0.5rem">
-							<button type="button" id="btn-schedule">Agendar</button>
-							<button type="button" class="secondary" id="btn-draft">Salvar rascunho</button>
+							<button type="button" class="btn" id="btn-schedule">📅 Agendar</button>
+							<button type="button" class="btn secondary" id="btn-draft">Salvar rascunho</button>
 						</div>
 					</div>
 					<div class="error" id="save-error"></div>
 				</div>
 			</section>
 
-			<!-- AGENDADAS -->
-			<section id="tab-agendadas" style="display:none">
-				<div class="card">
-					<h2>Ofertas agendadas</h2>
-					<div class="actions" style="margin-bottom:0.75rem">
-						<button type="button" class="secondary" id="btn-refresh">Atualizar</button>
-						<button type="button" class="ghost" id="btn-filter-due">Só prontas p/ disparo</button>
-						<button type="button" class="ghost" id="btn-filter-all">Todas</button>
-					</div>
-					<div id="offers-list"><p class="hint">Carregando…</p></div>
-				</div>
-			</section>
-
 			<!-- CUPONS -->
-			<section id="tab-cupons" style="display:none">
+			<section id="tab-cupons" hidden>
 				<div class="card">
-					<h2>Adicionar cupom especial</h2>
+					<h2>🎟️ Adicionar cupom especial</h2>
+					<p class="sub">Cole o texto do cupom (canal do Telegram) — o sistema extrai os dados. Os cupons coletados aparecem aqui automaticamente.</p>
 					<div class="field">
-						<label>Cole o texto do cupom (canal do Telegram) — o sistema extrai os dados</label>
+						<label>Texto do cupom</label>
 						<textarea id="coupon-text" rows="3" placeholder="Ex.: 🎟️ CUPOM SHOPEE — Use o cupom CUPOM70, R$70 OFF acima de R$300, válido até 23h59"></textarea>
 					</div>
 					<div class="grid-3">
@@ -274,18 +174,30 @@
 							</select>
 						</div>
 						<div class="field" style="display:flex; align-items:flex-end">
-							<button type="button" id="btn-add-coupon">Salvar cupom</button>
+							<button type="button" class="btn" id="btn-add-coupon">Salvar cupom</button>
 						</div>
 					</div>
-					<div class="hint">Os cupons coletados do Telegram aparecem aqui automaticamente. O cupom ativo mais recente de cada plataforma é anexado às ofertas daquela plataforma.</div>
 					<div class="error" id="coupon-error"></div>
 				</div>
 				<div class="card">
 					<h2>Cupons ativos</h2>
-					<div class="actions" style="margin-bottom:0.75rem">
-						<button type="button" class="secondary" id="btn-refresh-coupons">Atualizar</button>
+					<div class="actions" style="margin-bottom:0.7rem">
+						<button type="button" class="btn secondary" id="btn-refresh-coupons">Atualizar</button>
 					</div>
 					<div id="coupons-list"><p class="hint">Carregando…</p></div>
+				</div>
+			</section>
+
+			<!-- AGENDA -->
+			<section id="tab-agendadas" hidden>
+				<div class="card">
+					<h2>📅 Ofertas agendadas</h2>
+					<div class="actions" style="margin-bottom:0.7rem">
+						<button type="button" class="btn secondary" id="btn-refresh">Atualizar</button>
+						<button type="button" class="btn ghost" id="btn-filter-due">Só prontas</button>
+						<button type="button" class="btn ghost" id="btn-filter-all">Todas</button>
+					</div>
+					<div id="offers-list"><p class="hint">Carregando…</p></div>
 				</div>
 			</section>
 		</div>

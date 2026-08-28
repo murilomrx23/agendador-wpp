@@ -1,5 +1,5 @@
-// Ofertas Bot — frontend
-// Coleta a oferta, gera as 3 variações e agenda o disparo (envio manual).
+// Ofertas Bot — frontend visual
+// Coleta a oferta, gera as 3 variações (prévia estilo WhatsApp) e agenda.
 
 const $ = (id) => document.getElementById(id);
 const VARIATION_TAGS = ["Benefício", "Urgência", "Dor / problema"];
@@ -21,35 +21,92 @@ function parseMoney(v) {
 	return isFinite(n) ? n : undefined;
 }
 
+function escapeHtml(s) {
+	return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+// Renderiza a marcação do WhatsApp: *negrito*, ~riscado~, _itálico_.
+function waFormat(text) {
+	let h = escapeHtml(text);
+	h = h.replace(/\*([^*\n]+)\*/g, "<strong>$1</strong>");
+	h = h.replace(/~([^~\n]+)~/g, "<del>$1</del>");
+	h = h.replace(/(^|[\s(])_([^_\n]+)_/g, "$1<em>$2</em>");
+	return h;
+}
+
+function nowTime() {
+	return new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+}
+
+function copyText(text) {
+	navigator.clipboard.writeText(text).then(
+		() => toast("Copiado! Cole no grupo do WhatsApp"),
+		() => toast("Não foi possível copiar"),
+	);
+}
+
 async function api(path, opts) {
-	const res = await fetch(path, {
-		headers: { "content-type": "application/json" },
-		...opts,
-	});
+	const res = await fetch(path, { headers: { "content-type": "application/json" }, ...opts });
 	const data = await res.json().catch(() => ({}));
 	if (!res.ok) throw new Error(data.error || `Erro ${res.status}`);
 	return data;
 }
 
-// ---------- abas ----------
-document.querySelectorAll(".tab").forEach((tab) => {
-	tab.addEventListener("click", () => {
-		document.querySelectorAll(".tab").forEach((t) => t.classList.remove("active"));
-		tab.classList.add("active");
-		const name = tab.dataset.tab;
-		$("tab-nova").style.display = name === "nova" ? "block" : "none";
-		$("tab-agendadas").style.display = name === "agendadas" ? "block" : "none";
-		$("tab-cupons").style.display = name === "cupons" ? "block" : "none";
-		if (name === "agendadas") loadOffers();
-		if (name === "cupons") loadCoupons();
-	});
+// ---------- navegação ----------
+const SECTIONS = ["dashboard", "nova", "cupons", "agendadas"];
+document.querySelectorAll(".nav button").forEach((btn) => {
+	btn.addEventListener("click", () => selectTab(btn.dataset.tab));
 });
+function selectTab(name) {
+	document.querySelectorAll(".nav button").forEach((b) => b.classList.toggle("active", b.dataset.tab === name));
+	SECTIONS.forEach((s) => ($("tab-" + s).hidden = s !== name));
+	if (name === "dashboard") loadDashboard();
+	if (name === "agendadas") loadOffers();
+	if (name === "cupons") loadCoupons();
+}
+
+// ---------- steps ----------
+function setStep(active) {
+	document.querySelectorAll("#steps .step").forEach((el) => {
+		const n = Number(el.dataset.step);
+		el.classList.toggle("done", n < active);
+		el.classList.toggle("active", n === active);
+	});
+}
+
+// ---------- painel ----------
+async function loadDashboard() {
+	try {
+		const [{ offers }, { coupons }] = await Promise.all([
+			api("/api/offers"),
+			api("/api/coupons?active=1"),
+		]);
+		const now = Date.now();
+		const scheduled = offers.filter((o) => o.status === "scheduled").length;
+		const ready = offers.filter((o) => o.status === "ready" || (o.scheduledAt && o.scheduledAt <= now && o.status !== "sent" && o.status !== "canceled")).length;
+		const sent = offers.filter((o) => o.status === "sent").length;
+		$("st-scheduled").textContent = scheduled;
+		$("st-ready").textContent = ready;
+		$("st-coupons").textContent = coupons.length;
+		$("st-sent").textContent = sent;
+
+		const due = offers.filter((o) => o.scheduledAt && o.scheduledAt <= now && o.status !== "sent" && o.status !== "canceled");
+		const box = $("due-list");
+		if (!due.length) {
+			box.innerHTML = '<div class="empty"><div class="big">✅</div>Nada pendente agora.</div>';
+		} else {
+			box.innerHTML = "";
+			due.forEach((o) => box.appendChild(renderOffer(o, now)));
+		}
+	} catch (e) {
+		$("due-list").innerHTML = `<p class="error">${escapeHtml(e.message)}</p>`;
+	}
+}
 
 // ---------- fonte ----------
 $("offerType").addEventListener("change", () => {
 	$("cupom-fields").classList.toggle("show", $("offerType").value === "cupom");
 });
-
 $("source").addEventListener("change", updateSourceUI);
 
 async function updateSourceUI() {
@@ -57,17 +114,17 @@ async function updateSourceUI() {
 	const collect = $("source-collect");
 	const hint = $("source-hint");
 	if (src === "manual") {
-		collect.style.display = "none";
+		collect.hidden = true;
 		hint.textContent = "Cole os dados do produto abaixo (ou extraídos de um print).";
 		return;
 	}
-	collect.style.display = "block";
+	collect.hidden = false;
 	try {
 		const { sources } = await api("/api/sources");
 		const s = sources.find((x) => x.id === src);
 		hint.innerHTML = s && s.configured
 			? '<span class="pill ok">Configurado</span> Pronto para coletar.'
-			: '<span class="pill no">Sem credenciais</span> Configure os secrets no Worker (veja o README). Você ainda pode usar a coleta manual.';
+			: '<span class="pill no">Sem credenciais</span> Configure os secrets no Worker (README). A coleta manual segue funcionando.';
 	} catch (e) {
 		hint.textContent = e.message;
 	}
@@ -81,18 +138,15 @@ $("btn-collect").addEventListener("click", async () => {
 	try {
 		const q = keyword ? `?keyword=${encodeURIComponent(keyword)}` : "";
 		const { offers } = await api(`/api/sources/${src}/offers${q}`);
-		if (!offers.length) {
-			box.innerHTML = '<p class="hint">Nenhuma oferta retornada.</p>';
-			return;
-		}
+		if (!offers.length) { box.innerHTML = '<p class="hint">Nenhuma oferta retornada.</p>'; return; }
 		box.innerHTML = "";
 		offers.forEach((o) => {
 			const div = document.createElement("div");
-			div.className = "offer-item";
+			div.className = "item";
 			div.innerHTML = `<strong>${escapeHtml(o.productName)}</strong>
-				<div class="meta"><span>R$ ${o.price}</span><span>${o.platform}</span></div>`;
+				<div class="meta"><span>R$ ${o.price}</span>${o.oldPrice ? `<span>de R$ ${o.oldPrice}</span>` : ""}<span>${o.platform}</span><span>${o.category || ""}</span></div>`;
 			const btn = document.createElement("button");
-			btn.className = "secondary";
+			btn.className = "btn secondary";
 			btn.textContent = "Usar esta oferta";
 			btn.onclick = () => fillFormFromOffer(o);
 			div.appendChild(btn);
@@ -113,8 +167,9 @@ function fillFormFromOffer(o) {
 	$("category").value = o.category || "generico";
 	$("freeShipping").checked = !!o.freeShipping;
 	$("cupom-fields").classList.toggle("show", $("offerType").value === "cupom");
-	toast("Oferta carregada no formulário");
-	window.scrollTo({ top: 0, behavior: "smooth" });
+	setStep(2);
+	toast("Oferta carregada");
+	$("productName").scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
 // ---------- montar payload ----------
@@ -154,9 +209,10 @@ $("btn-generate").addEventListener("click", async () => {
 		selectedIndex = 0;
 		renderVariations();
 		showAppliedCoupon(ad.appliedCoupon, ad.offer);
-		$("variations-card").style.display = "block";
-		$("schedule-card").style.display = "block";
-		$("schedule-card").scrollIntoView({ behavior: "smooth", block: "nearest" });
+		$("variations-card").hidden = false;
+		$("schedule-card").hidden = false;
+		setStep(4);
+		$("variations-card").scrollIntoView({ behavior: "smooth", block: "start" });
 	} catch (e) {
 		$("gen-error").textContent = e.message;
 	}
@@ -166,9 +222,10 @@ function showAppliedCoupon(coupon, offer) {
 	const box = $("applied-coupon");
 	if (coupon && (coupon.code || coupon.offValue)) {
 		const label = coupon.code || `${coupon.offValue} OFF ${coupon.description || "TODAS AS LOJAS"}`;
-		box.innerHTML = `<span class="pill ok">Cupom anexado</span> <strong>${escapeHtml(label)}</strong> — auto pela plataforma (${offer?.platform || ""}).`;
+		box.innerHTML = `🎟️ Cupom aplicado: <strong>${escapeHtml(label)}</strong> (${offer?.platform || ""})`;
+		box.hidden = false;
 	} else {
-		box.innerHTML = "";
+		box.hidden = true;
 	}
 }
 
@@ -176,18 +233,25 @@ function renderVariations() {
 	const box = $("variations");
 	box.innerHTML = "";
 	currentVariations.forEach((text, i) => {
-		const div = document.createElement("div");
-		div.className = "variation" + (i === selectedIndex ? " selected" : "");
-		div.innerHTML = `<div class="head">
-			<span class="tag">Variação ${i + 1} · ${VARIATION_TAGS[i] || ""}</span>
-		</div><pre>${escapeHtml(text)}</pre>`;
+		const wa = document.createElement("div");
+		wa.className = "wa" + (i === selectedIndex ? " selected" : "");
+		wa.innerHTML = `
+			<div class="wa-head">
+				<span class="tag">Variação ${i + 1} · ${VARIATION_TAGS[i] || ""}</span>
+				<span class="pick">${i === selectedIndex ? "✓ escolhida" : "escolher"}</span>
+			</div>
+			<div class="wa-body">
+				<div class="bubble">${waFormat(text)}<span class="time">${nowTime()} ✓✓</span></div>
+			</div>
+			<div class="wa-foot"></div>`;
 		const copy = document.createElement("button");
-		copy.className = "ghost";
+		copy.className = "btn ghost";
 		copy.textContent = "Copiar";
+		copy.style.fontSize = "0.8rem";
 		copy.onclick = (ev) => { ev.stopPropagation(); copyText(text); };
-		div.querySelector(".head").appendChild(copy);
-		div.onclick = () => { selectedIndex = i; renderVariations(); };
-		box.appendChild(div);
+		wa.querySelector(".wa-foot").appendChild(copy);
+		wa.onclick = () => { selectedIndex = i; renderVariations(); };
+		box.appendChild(wa);
 	});
 }
 
@@ -208,13 +272,12 @@ async function save(schedule) {
 			offer.scheduledAt = null;
 		}
 		await api("/api/offers", { method: "POST", body: JSON.stringify(offer) });
-		toast(schedule ? "Oferta agendada!" : "Rascunho salvo!");
+		toast(schedule ? "Oferta agendada! 📅" : "Rascunho salvo");
 		if (schedule) resetForm();
 	} catch (e) {
 		$("save-error").textContent = e.message;
 	}
 }
-
 $("btn-schedule").addEventListener("click", () => save(true));
 $("btn-draft").addEventListener("click", () => save(false));
 
@@ -222,13 +285,13 @@ function resetForm() {
 	["productName", "price", "oldPrice", "link", "groups", "couponCode", "couponValue", "couponDesc", "scheduledAt", "src-keyword"].forEach((id) => ($(id).value = ""));
 	$("freeShipping").checked = false;
 	currentVariations = [];
-	$("variations-card").style.display = "none";
-	$("schedule-card").style.display = "none";
+	$("variations-card").hidden = true;
+	$("schedule-card").hidden = true;
+	setStep(1);
 }
 
-// ---------- lista de agendadas ----------
-let currentFilter = null; // null=todas, "due"
-
+// ---------- agenda ----------
+let currentFilter = null;
 $("btn-refresh").addEventListener("click", loadOffers);
 $("btn-filter-due").addEventListener("click", () => { currentFilter = "due"; loadOffers(); });
 $("btn-filter-all").addEventListener("click", () => { currentFilter = null; loadOffers(); });
@@ -239,10 +302,7 @@ async function loadOffers() {
 	try {
 		const path = currentFilter === "due" ? "/api/offers?due=1" : "/api/offers";
 		const { offers } = await api(path);
-		if (!offers.length) {
-			box.innerHTML = '<p class="hint">Nenhuma oferta.</p>';
-			return;
-		}
+		if (!offers.length) { box.innerHTML = '<div class="empty"><div class="big">📭</div>Nenhuma oferta ainda.</div>'; return; }
 		box.innerHTML = "";
 		const now = Date.now();
 		offers.forEach((o) => box.appendChild(renderOffer(o, now)));
@@ -254,7 +314,7 @@ async function loadOffers() {
 function renderOffer(o, now) {
 	const due = o.scheduledAt && o.scheduledAt <= now && o.status !== "sent" && o.status !== "canceled";
 	const div = document.createElement("div");
-	div.className = "offer-item" + (due ? " due" : "");
+	div.className = "item" + (due ? " due" : "");
 	const when = o.scheduledAt ? new Date(o.scheduledAt).toLocaleString("pt-BR") : "—";
 	const msg = o.variations[o.selectedIndex] || o.variations[0] || "";
 	div.innerHTML = `
@@ -262,16 +322,12 @@ function renderOffer(o, now) {
 			<strong>${escapeHtml(o.productName)}</strong>
 			<span class="pill ${o.status}">${statusLabel(o.status)}${due ? " · agora" : ""}</span>
 		</div>
-		<div class="meta">
-			<span>🕒 ${when}</span>
-			<span>${o.platform}</span>
-			<span>${o.groups.length ? "👥 " + escapeHtml(o.groups.join(", ")) : "sem grupos"}</span>
-		</div>
-		<pre>${escapeHtml(msg)}</pre>`;
+		<div class="meta"><span>🕒 ${when}</span><span>${o.platform}</span><span>${o.groups.length ? "👥 " + escapeHtml(o.groups.join(", ")) : "sem grupos"}</span></div>
+		<div class="bubble" style="max-width:100%">${waFormat(msg)}</div>`;
 	const actions = document.createElement("div");
 	actions.className = "actions";
 	actions.appendChild(mkBtn("Copiar", "secondary", () => copyText(msg)));
-	if (o.status !== "sent") actions.appendChild(mkBtn("Marcar como enviada", "ghost", () => markSent(o.id)));
+	if (o.status !== "sent") actions.appendChild(mkBtn("Marcar enviada", "ghost", () => markSent(o.id)));
 	actions.appendChild(mkBtn("Excluir", "danger", () => removeOffer(o.id)));
 	div.appendChild(actions);
 	return div;
@@ -279,39 +335,25 @@ function renderOffer(o, now) {
 
 function mkBtn(label, cls, fn) {
 	const b = document.createElement("button");
-	b.className = cls;
+	b.className = "btn " + cls;
+	b.style.fontSize = "0.82rem";
 	b.textContent = label;
 	b.onclick = fn;
 	return b;
 }
-
 function statusLabel(s) {
 	return { draft: "Rascunho", scheduled: "Agendada", ready: "Pronta", sent: "Enviada", canceled: "Cancelada" }[s] || s;
 }
-
 async function markSent(id) {
 	await api(`/api/offers/${id}`, { method: "PATCH", body: JSON.stringify({ markSent: true }) });
 	toast("Marcada como enviada");
 	loadOffers();
 }
-
 async function removeOffer(id) {
 	if (!confirm("Excluir esta oferta?")) return;
 	await api(`/api/offers/${id}`, { method: "DELETE" });
 	toast("Excluída");
 	loadOffers();
-}
-
-// ---------- helpers ----------
-function copyText(text) {
-	navigator.clipboard.writeText(text).then(
-		() => toast("Copiado! Cole no grupo do WhatsApp"),
-		() => toast("Não foi possível copiar"),
-	);
-}
-
-function escapeHtml(s) {
-	return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
 
 // ---------- cupons ----------
@@ -329,7 +371,6 @@ $("btn-add-coupon").addEventListener("click", async () => {
 		$("coupon-error").textContent = e.message;
 	}
 });
-
 $("btn-refresh-coupons").addEventListener("click", loadCoupons);
 
 async function loadCoupons() {
@@ -337,25 +378,21 @@ async function loadCoupons() {
 	box.innerHTML = '<p class="hint">Carregando…</p>';
 	try {
 		const { coupons } = await api("/api/coupons");
-		if (!coupons.length) {
-			box.innerHTML = '<p class="hint">Nenhum cupom. Cole um acima ou conecte o coletor do Telegram.</p>';
-			return;
-		}
+		if (!coupons.length) { box.innerHTML = '<div class="empty"><div class="big">🎟️</div>Nenhum cupom. Cole um acima ou conecte o coletor do Telegram.</div>'; return; }
 		box.innerHTML = "";
 		coupons.forEach((c) => box.appendChild(renderCoupon(c)));
 	} catch (e) {
 		box.innerHTML = `<p class="error">${escapeHtml(e.message)}</p>`;
 	}
 }
-
 function renderCoupon(c) {
 	const div = document.createElement("div");
-	div.className = "offer-item" + (c.active ? "" : " ");
+	div.className = "item";
 	const label = c.code || (c.offValue ? `${c.offValue} OFF ${c.description || "TODAS AS LOJAS"}` : "—");
 	const flags = [
-		c.platform ? c.platform : "qualquer plataforma",
+		c.platform || "qualquer plataforma",
 		c.isFlash ? "⚡ relâmpago" + (c.validUntil ? " até " + c.validUntil : "") : null,
-		"via " + (c.source || "manual") + (c.channel ? " @" + c.channel : ""),
+		"via " + (c.source || "manual") + (c.channel ? " · " + c.channel : ""),
 	].filter(Boolean);
 	div.innerHTML = `
 		<div class="row" style="justify-content:space-between">
@@ -370,12 +407,10 @@ function renderCoupon(c) {
 	div.appendChild(actions);
 	return div;
 }
-
 async function toggleCoupon(id, active) {
 	await api(`/api/coupons/${id}`, { method: "PATCH", body: JSON.stringify({ active }) });
 	loadCoupons();
 }
-
 async function removeCoupon(id) {
 	if (!confirm("Excluir este cupom?")) return;
 	await api(`/api/coupons/${id}`, { method: "DELETE" });
@@ -383,5 +418,7 @@ async function removeCoupon(id) {
 	loadCoupons();
 }
 
-// init
+// ---------- init ----------
+["productName", "price", "link"].forEach((id) => $(id).addEventListener("input", () => { if (currentVariations.length === 0) setStep(2); }));
 updateSourceUI();
+loadDashboard();
