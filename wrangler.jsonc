@@ -4,7 +4,7 @@
  */
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "llm-chat-app-template",
+	"name": "ofertas-bot",
 	"main": "src/index.ts",
 	"compatibility_date": "2025-10-08",
 	"compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
@@ -17,6 +17,21 @@
 	},
 	"ai": {
 		"binding": "AI"
+	},
+	// Banco D1 com as ofertas agendadas.
+	// Crie com: wrangler d1 create ofertas-db
+	// e cole o database_id retornado abaixo.
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "ofertas-db",
+			"database_id": "REPLACE_WITH_YOUR_D1_DATABASE_ID",
+			"migrations_dir": "migrations"
+		}
+	],
+	// Cron: a cada 5 min promove ofertas agendadas para "prontas para disparo".
+	"triggers": {
+		"crons": ["*/5 * * * *"]
 	},
 	"upload_source_maps": true
 }

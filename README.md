@@ -1,153 +1,106 @@
-# LLM Chat Application Template
+# 🛍️ Ofertas Bot
 
-A simple, ready-to-deploy chat application template powered by Cloudflare Workers AI. This template provides a clean starting point for building AI chat applications with streaming responses.
+Sistema para **coletar ofertas e cupons** (Shopee e Mercado Livre), **gerar
+automaticamente o anúncio** no padrão do seu *Agente Divulgador de Produtos* e
+**agendar o disparo** para os seus grupos de WhatsApp (envio manual).
 
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/cloudflare/templates/tree/main/llm-chat-app-template)
+Roda em **Cloudflare Workers** + **D1**.
 
-<!-- dash-content-start -->
+## O que já está pronto (núcleo)
 
-## Demo
+| Etapa | Status | Onde |
+| --- | --- | --- |
+| **Gerador de anúncios** — 3 variações fiéis ao agente (cálculo de desconto, regras de desconto baixo, cupom, links de resgate por plataforma, relâmpago, espaçamento) | ✅ | `src/generator/` |
+| **Agendamento** — cria/agenda ofertas, lista, marca como enviada, cron de "prontas para disparo" | ✅ | `src/data/db.ts`, `src/index.ts` |
+| **Interface web** — coletar → gerar → escolher variação → agendar | ✅ | `public/` |
+| **Fontes de afiliados** (Shopee/ML) | 🔌 adaptadores prontos, precisam de credenciais | `src/sources/` |
+| **Disparo no WhatsApp** | ✋ manual (copiar/colar); interface `Dispatcher` pronta para automação futura | `src/whatsapp/` |
 
-This template demonstrates how to build an AI-powered chat interface using Cloudflare Workers AI with streaming responses. It features:
+## Fluxo
 
-- Real-time streaming of AI responses using Server-Sent Events (SSE)
-- Easy customization of models and system prompts
-- Support for AI Gateway integration
-- Clean, responsive UI that works on mobile and desktop
+1. **Coletar** a oferta — pela API de afiliados (quando configurada) ou digitando/colando os dados manualmente (inclusive de um print).
+2. **Gerar** as 3 variações (Benefício / Urgência / Dor), seguindo todas as regras do agente.
+3. **Escolher** a variação e os **grupos** de destino.
+4. **Agendar** o horário. No horário, a oferta aparece como *pronta para disparo* — você copia e cola nos grupos (zero risco de banimento do número).
 
-## Features
-
-- 💬 Simple and responsive chat interface
-- ⚡ Server-Sent Events (SSE) for streaming responses
-- 🧠 Powered by Cloudflare Workers AI LLMs
-- 🛠️ Built with TypeScript and Cloudflare Workers
-- 📱 Mobile-friendly design
-- 🔄 Maintains chat history on the client
-- 🔎 Built-in Observability logging
-<!-- dash-content-end -->
-
-## Getting Started
-
-### Prerequisites
-
-- [Node.js](https://nodejs.org/) (v18 or newer)
-- [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/install-and-update/)
-- A Cloudflare account with Workers AI access
-
-### Installation
-
-1. Clone this repository:
-
-   ```bash
-   git clone https://github.com/cloudflare/templates.git
-   cd templates/llm-chat-app
-   ```
-
-2. Install dependencies:
-
-   ```bash
-   npm install
-   ```
-
-3. Generate Worker type definitions:
-   ```bash
-   npm run cf-typegen
-   ```
-
-### Development
-
-Start a local development server:
+## Setup
 
 ```bash
+npm install
+
+# 1. Crie o banco D1 e copie o database_id para o wrangler.jsonc
+npx wrangler d1 create ofertas-db
+
+# 2. Aplique a migração (local e/ou remoto)
+npx wrangler d1 migrations apply ofertas-db --local
+npx wrangler d1 migrations apply ofertas-db --remote
+
+# 3. Rode localmente
 npm run dev
 ```
 
-This will start a local server at http://localhost:8787.
+### Credenciais das fontes (opcional)
 
-Note: Using Workers AI accesses your Cloudflare account even during local development, which will incur usage charges.
-
-### Deployment
-
-Deploy to Cloudflare Workers:
+As fontes de afiliados só ficam ativas com os secrets configurados. Sem eles, a
+coleta manual funciona normalmente.
 
 ```bash
-npm run deploy
+npx wrangler secret put SHOPEE_APP_ID
+npx wrangler secret put SHOPEE_APP_SECRET
+npx wrangler secret put MELI_ACCESS_TOKEN
 ```
 
-### Monitor
+## API
 
-View real-time logs associated with any deployed Worker:
+| Método | Rota | Descrição |
+| --- | --- | --- |
+| `POST` | `/api/generate` | Gera as 3 variações (sem salvar). Corpo: `Offer`. |
+| `GET` | `/api/sources` | Lista as fontes e se estão configuradas. |
+| `GET` | `/api/sources/:id/offers` | Coleta ofertas de uma fonte (`?keyword=&limit=`). |
+| `POST` | `/api/offers` | Cria/agenda uma oferta. |
+| `GET` | `/api/offers` | Lista (`?status=` ou `?due=1`). |
+| `GET` | `/api/offers/:id` | Detalhe. |
+| `PATCH` | `/api/offers/:id` | Atualiza status/agendamento/seleção/grupos (`markSent:true`). |
+| `DELETE` | `/api/offers/:id` | Remove. |
+
+### Exemplo — gerar um anúncio
 
 ```bash
-npm wrangler tail
+curl -X POST http://localhost:8787/api/generate -H 'content-type: application/json' -d '{
+  "productName": "Organizador de Gavetas 6 Peças",
+  "price": 49.90, "oldPrice": 89.90,
+  "link": "https://s.shopee.com.br/abc",
+  "offerType": "cupom", "category": "organizacao",
+  "coupon": { "code": "CUPOM70" }, "freeShipping": true
+}'
 ```
 
-## Project Structure
+## Regras do agente implementadas
 
-```
-/
-├── public/             # Static assets
-│   ├── index.html      # Chat UI HTML
-│   └── chat.js         # Chat UI frontend script
-├── src/
-│   ├── index.ts        # Main Worker entry point
-│   └── types.ts        # TypeScript type definitions
-├── test/               # Test files
-├── wrangler.jsonc      # Cloudflare Worker configuration
-├── tsconfig.json       # TypeScript configuration
-└── README.md           # This documentation
-```
+O gerador (`src/generator/`) codifica **deterministicamente** as regras do
+arquivo do agente, então a formatação sai sempre exata:
 
-## How It Works
+- Cálculo de desconto (% e R$) e **regras de desconto baixo** (esconde valor
+  antigo se a diferença for `< R$ 10,00`; esconde a linha de % se for `< 10%`).
+- Blocos de preço por tipo: **Padrão / Promoção comum / Relâmpago / Cupom**.
+- **Cupom**: prioriza código digitável; senão usa valor/%, convertido para
+  `"X OFF DESCRIÇÃO"` (porcentagem tem prioridade sobre valor).
+- **Links de resgate**: Shopee digitável → `s.shopee.com.br/6ffB5DxyKM`; Shopee
+  não digitável → `s.shopee.com.br/4VZ4QKlIen`; **Meli nunca** tem resgate.
+- Relâmpago com prefixo obrigatório e validade `até as 23h59`; cupom com a
+  frase de urgência correta.
+- Espaçamento: 1 linha em branco entre blocos, nenhuma dentro do bloco.
+- Link de compra sempre antes do link de resgate.
+- 3 variações com ângulos persuasivos distintos e headlines que não se repetem.
 
-### Backend
+Cobertura testada em `src/generator/generate.test.ts` (`npm test`).
 
-The backend is built with Cloudflare Workers and uses the Workers AI platform to generate responses. The main components are:
+## Próximos passos (adaptadores)
 
-1. **API Endpoint** (`/api/chat`): Accepts POST requests with chat messages and streams responses
-2. **Streaming**: Uses Server-Sent Events (SSE) for real-time streaming of AI responses
-3. **Workers AI Binding**: Connects to Cloudflare's AI service via the Workers AI binding
+- **Fontes**: preencher as queries de afiliado conforme sua conta (`src/sources/shopee.ts`, `meli.ts`).
+- **Telegram / Instagram** como fontes adicionais: implementar a interface `OfferSourceAdapter`.
+- **Disparo automático no WhatsApp**: implementar `Dispatcher` (ex.: Baileys/whatsapp-web.js num servidor Node, ou WhatsApp Cloud API) e chamá-lo no handler `scheduled`.
 
-### Frontend
+## Licença
 
-The frontend is a simple HTML/CSS/JavaScript application that:
-
-1. Presents a chat interface
-2. Sends user messages to the API
-3. Processes streaming responses in real-time
-4. Maintains chat history on the client side
-
-## Customization
-
-### Changing the Model
-
-To use a different AI model, update the `MODEL_ID` constant in `src/index.ts`. You can find available models in the [Cloudflare Workers AI documentation](https://developers.cloudflare.com/workers-ai/models/).
-
-### Using AI Gateway
-
-The template includes commented code for AI Gateway integration, which provides additional capabilities like rate limiting, caching, and analytics.
-
-To enable AI Gateway:
-
-1. [Create an AI Gateway](https://dash.cloudflare.com/?to=/:account/ai/ai-gateway) in your Cloudflare dashboard
-2. Uncomment the gateway configuration in `src/index.ts`
-3. Replace `YOUR_GATEWAY_ID` with your actual AI Gateway ID
-4. Configure other gateway options as needed:
-   - `skipCache`: Set to `true` to bypass gateway caching
-   - `cacheTtl`: Set the cache time-to-live in seconds
-
-Learn more about [AI Gateway](https://developers.cloudflare.com/ai-gateway/).
-
-### Modifying the System Prompt
-
-The default system prompt can be changed by updating the `SYSTEM_PROMPT` constant in `src/index.ts`.
-
-### Styling
-
-The UI styling is contained in the `<style>` section of `public/index.html`. You can modify the CSS variables at the top to quickly change the color scheme.
-
-## Resources
-
-- [Cloudflare Workers Documentation](https://developers.cloudflare.com/workers/)
-- [Cloudflare Workers AI Documentation](https://developers.cloudflare.com/workers-ai/)
-- [Workers AI Models](https://developers.cloudflare.com/workers-ai/models/)
+MIT
