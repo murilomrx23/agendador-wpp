@@ -13,9 +13,8 @@
  * manual segue funcionando.
  */
 import type { Env } from "../types";
-import type { Category, Offer } from "../generator/types";
-import type { FetchOffersParams, OfferSourceAdapter } from "./types";
-import { applyAffiliate } from "./affiliate";
+import type { Category, Offer, OfferType } from "../generator/types";
+import type { FetchOffersParams, OfferFeed, OfferSourceAdapter } from "./types";
 import { guessCategory } from "./category";
 
 const SHOPEE_GRAPHQL = "https://open-api.affiliate.shopee.com.br/graphql";
@@ -54,7 +53,7 @@ async function signPayload(
  * Converte um nó da Shopee em `Offer`. Deriva o valor antigo a partir da taxa
  * de desconto (`price = old * (1 - rate/100)`), quando disponível.
  */
-export function mapShopeeNode(n: ShopeeNode, tag?: string): Offer {
+export function mapShopeeNode(n: ShopeeNode, tag?: string, offerType: OfferType = "padrao"): Offer {
 	const price = parseFloat(n.price ?? n.priceMin ?? "0");
 	const rate = Number(n.priceDiscountRate ?? 0);
 	let oldPrice: number | undefined;
@@ -70,9 +69,16 @@ export function mapShopeeNode(n: ShopeeNode, tag?: string): Offer {
 		oldPrice,
 		link,
 		platform: "shopee",
-		offerType: "padrao",
+		offerType,
 		category,
 	};
+}
+
+/** Mapeia o feed para o sortType da Shopee. */
+function feedSortType(feed?: OfferFeed): number {
+	if (feed === "mais_vendidos") return 2; // ITEM_SOLD
+	if (feed === "relampago") return 2; // mais vendidos, depois ordenados por desconto
+	return 1; // RELEVANCE (principais)
 }
 
 /** Anexa sub_id sem sobrescrever, tolerante a links inválidos. */
@@ -105,10 +111,10 @@ export class ShopeeAffiliateSource implements OfferSourceAdapter {
 		const appId = this.env.SHOPEE_APP_ID as string;
 		const appSecret = this.env.SHOPEE_APP_SECRET as string;
 		const limit = Math.min(params.limit ?? 20, 50);
+		const feed = params.feed ?? "principais";
 
-		// sortType 2 = mais vendidos. Ajuste conforme sua estratégia.
 		const args = [
-			"sortType: 2",
+			`sortType: ${feedSortType(feed)}`,
 			`limit: ${limit}`,
 			params.keyword ? `keyword: ${JSON.stringify(params.keyword)}` : "",
 		]
@@ -138,7 +144,14 @@ export class ShopeeAffiliateSource implements OfferSourceAdapter {
 		if (json.errors) {
 			throw new Error(`Shopee Afiliados erro: ${JSON.stringify(json.errors)}`);
 		}
-		const nodes = json.data?.productOfferV2?.nodes ?? [];
-		return nodes.map((n) => mapShopeeNode(n, this.env.SHOPEE_SUB_ID));
+		let nodes = json.data?.productOfferV2?.nodes ?? [];
+		// No feed relâmpago, prioriza os maiores descontos e marca como relâmpago.
+		if (feed === "relampago") {
+			nodes = nodes
+				.filter((n) => Number(n.priceDiscountRate ?? 0) > 0)
+				.sort((a, b) => Number(b.priceDiscountRate ?? 0) - Number(a.priceDiscountRate ?? 0));
+		}
+		const offerType: OfferType = feed === "relampago" ? "relampago" : "padrao";
+		return nodes.map((n) => mapShopeeNode(n, this.env.SHOPEE_SUB_ID, offerType));
 	}
 }

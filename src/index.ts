@@ -152,7 +152,11 @@ async function route(request: Request, env: Env, url: URL): Promise<Response> {
 		if (!source) return error("Fonte não encontrada.", 404);
 		const keyword = url.searchParams.get("keyword") || undefined;
 		const limit = Number(url.searchParams.get("limit")) || undefined;
-		const offers = await source.fetchOffers({ keyword, limit });
+		const feedParam = url.searchParams.get("feed");
+		const feed = (["principais", "mais_vendidos", "relampago"].includes(feedParam || "")
+			? feedParam
+			: undefined) as import("./sources/types").OfferFeed | undefined;
+		const offers = await source.fetchOffers({ keyword, limit, feed });
 		return json({ offers });
 	}
 

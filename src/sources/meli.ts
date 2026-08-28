@@ -7,8 +7,8 @@
  * afiliado configurada. Autenticação por Access Token (MELI_ACCESS_TOKEN).
  */
 import type { Env } from "../types";
-import type { Offer } from "../generator/types";
-import type { FetchOffersParams, OfferSourceAdapter } from "./types";
+import type { Offer, OfferType } from "../generator/types";
+import type { FetchOffersParams, OfferFeed, OfferSourceAdapter } from "./types";
 import { guessCategory } from "./category";
 
 const MELI_API = "https://api.mercadolibre.com";
@@ -23,7 +23,7 @@ export interface MeliItem {
 }
 
 /** Converte um item do Mercado Livre em `Offer`. */
-export function mapMeliItem(item: MeliItem, tag?: string): Offer {
+export function mapMeliItem(item: MeliItem, tag?: string, forceType?: OfferType): Offer {
 	const hasOld =
 		typeof item.original_price === "number" && (item.original_price as number) > item.price;
 	const link = tag ? applyMeliTag(item.permalink, tag) : item.permalink;
@@ -33,10 +33,16 @@ export function mapMeliItem(item: MeliItem, tag?: string): Offer {
 		oldPrice: hasOld ? (item.original_price as number) : undefined,
 		link,
 		platform: "meli",
-		offerType: hasOld ? "relampago" : "padrao",
+		offerType: forceType ?? (hasOld ? "relampago" : "padrao"),
 		category: guessCategory(item.title),
 		freeShipping: !!item.shipping?.free_shipping,
 	};
+}
+
+/** Mapeia o feed para o parâmetro `sort` da busca do Mercado Livre. */
+function feedSort(feed?: OfferFeed): string | null {
+	if (feed === "mais_vendidos") return "sold_quantity_desc";
+	return null; // principais/relâmpago: relevância padrão
 }
 
 /** Anexa o parâmetro de tracking do afiliado, sem sobrescrever. */
@@ -67,8 +73,10 @@ export class MeliAffiliateSource implements OfferSourceAdapter {
 			);
 		}
 		const limit = Math.min(params.limit ?? 20, 50);
+		const feed = params.feed ?? "principais";
 		const q = params.keyword ? encodeURIComponent(params.keyword) : "ofertas";
-		const url = `${MELI_API}/sites/${SITE_ID}/search?q=${q}&limit=${limit}`;
+		const sort = feedSort(feed);
+		const url = `${MELI_API}/sites/${SITE_ID}/search?q=${q}&limit=${limit}${sort ? `&sort=${sort}` : ""}`;
 
 		const res = await fetch(url, {
 			headers: { Authorization: `Bearer ${this.env.MELI_ACCESS_TOKEN}` },
@@ -78,9 +86,10 @@ export class MeliAffiliateSource implements OfferSourceAdapter {
 		}
 		const json = (await res.json()) as { results?: MeliItem[] };
 		const items = json.results ?? [];
-		// Prioriza itens com desconto real (original_price > price).
 		const withDeals = items.filter((i) => typeof i.original_price === "number" && (i.original_price as number) > i.price);
-		const chosen = withDeals.length ? withDeals : items;
-		return chosen.map((item) => mapMeliItem(item, this.env.MELI_AFFILIATE_TAG));
+		// Relâmpago/principais priorizam itens com desconto real.
+		const chosen = feed === "mais_vendidos" ? items : withDeals.length ? withDeals : items;
+		const forceType: OfferType | undefined = feed === "relampago" ? "relampago" : undefined;
+		return chosen.map((item) => mapMeliItem(item, this.env.MELI_AFFILIATE_TAG, forceType));
 	}
 }

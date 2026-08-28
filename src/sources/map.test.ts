@@ -45,6 +45,15 @@ describe("mapShopeeNode", () => {
 		);
 		expect(offer.link).toContain("sub_id=meuid");
 	});
+
+	it("respeita o offerType forçado (feed relâmpago)", () => {
+		const offer = mapShopeeNode(
+			{ productName: "X", price: "10.00", priceDiscountRate: 30, offerLink: "https://s.shopee.com.br/x" },
+			undefined,
+			"relampago",
+		);
+		expect(offer.offerType).toBe("relampago");
+	});
 });
 
 describe("mapMeliItem", () => {

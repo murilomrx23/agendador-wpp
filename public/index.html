@@ -44,26 +44,31 @@
 
 				<div class="card">
 					<h2><span class="n">1</span> Coletar oferta</h2>
-					<div class="field">
-						<label>Fonte</label>
-						<select id="source">
-							<option value="manual">Manual (colar dados / print)</option>
-							<option value="shopee_affiliate">Shopee Afiliados</option>
-							<option value="meli_affiliate">Mercado Livre Afiliados</option>
-						</select>
-						<div class="hint source-status" id="source-hint"></div>
-					</div>
-					<div id="source-collect" hidden>
-						<div class="grid">
-							<div class="field">
-								<label>Palavra-chave (opcional)</label>
+					<div class="grid">
+						<div class="field">
+							<label>Fonte</label>
+							<select id="source">
+								<option value="shopee_affiliate">Shopee Afiliados</option>
+								<option value="meli_affiliate">Mercado Livre Afiliados</option>
+								<option value="manual">Manual (colar dados / print)</option>
+							</select>
+							<div class="hint source-status" id="source-hint"></div>
+						</div>
+						<div class="field">
+							<label>Filtrar por palavra-chave (opcional)</label>
+							<div style="display:flex; gap:.5rem">
 								<input id="src-keyword" placeholder="ex.: organizador, fone..." />
-							</div>
-							<div class="field" style="display:flex; align-items:flex-end">
-								<button type="button" class="btn secondary" id="btn-collect">Coletar ofertas</button>
+								<button type="button" class="btn secondary" id="btn-collect">Buscar</button>
 							</div>
 						</div>
-						<div id="collect-results"></div>
+					</div>
+					<div id="source-collect" hidden>
+						<div class="feedtabs" id="feedtabs">
+							<button type="button" class="feedtab active" data-feed="principais">🔥 Principais ofertas</button>
+							<button type="button" class="feedtab" data-feed="mais_vendidos">🏆 Mais vendidos</button>
+							<button type="button" class="feedtab" data-feed="relampago">⚡ Relâmpago</button>
+						</div>
+						<div id="collect-results"><p class="hint">Carregando ofertas…</p></div>
 					</div>
 				</div>
 
@@ -158,7 +163,12 @@
 			<!-- CUPONS -->
 			<section id="tab-cupons" hidden>
 				<div class="card">
-					<h2>🎟️ Adicionar cupom especial</h2>
+					<h2>🔥 Cupom do dia</h2>
+					<p class="sub">O cupom ativo mais recente de cada plataforma, extraído dos canais do Telegram.</p>
+					<div id="daily-coupons" class="daily-grid"><p class="hint">Carregando…</p></div>
+				</div>
+				<div class="card">
+					<h2>➕ Adicionar cupom especial</h2>
 					<p class="sub">Cole o texto do cupom (canal do Telegram) — o sistema extrai os dados. Os cupons coletados aparecem aqui automaticamente.</p>
 					<div class="field">
 						<label>Texto do cupom</label>

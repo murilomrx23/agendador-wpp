@@ -3,9 +3,11 @@
 
 const $ = (id) => document.getElementById(id);
 const VARIATION_TAGS = ["Benefício", "Urgência", "Dor / problema"];
+const FEED_LABEL = { principais: "Principais ofertas", mais_vendidos: "Mais vendidos", relampago: "Relâmpago" };
 
 let currentVariations = [];
 let selectedIndex = 0;
+let currentFeed = "principais";
 
 // ---------- utilidades ----------
 function toast(msg) {
@@ -61,8 +63,9 @@ function selectTab(name) {
 	document.querySelectorAll(".nav button").forEach((b) => b.classList.toggle("active", b.dataset.tab === name));
 	SECTIONS.forEach((s) => ($("tab-" + s).hidden = s !== name));
 	if (name === "dashboard") loadDashboard();
+	if (name === "nova") autoLoadFeed();
 	if (name === "agendadas") loadOffers();
-	if (name === "cupons") loadCoupons();
+	if (name === "cupons") { loadDailyCoupons(); loadCoupons(); }
 }
 
 // ---------- steps ----------
@@ -107,7 +110,13 @@ async function loadDashboard() {
 $("offerType").addEventListener("change", () => {
 	$("cupom-fields").classList.toggle("show", $("offerType").value === "cupom");
 });
-$("source").addEventListener("change", updateSourceUI);
+$("source").addEventListener("change", () => { updateSourceUI(); autoLoadFeed(); });
+document.querySelectorAll(".feedtab").forEach((t) => t.addEventListener("click", () => {
+	currentFeed = t.dataset.feed;
+	document.querySelectorAll(".feedtab").forEach((x) => x.classList.toggle("active", x === t));
+	autoLoadFeed();
+}));
+$("btn-collect").addEventListener("click", autoLoadFeed);
 
 async function updateSourceUI() {
 	const src = $("source").value;
@@ -123,39 +132,56 @@ async function updateSourceUI() {
 		const { sources } = await api("/api/sources");
 		const s = sources.find((x) => x.id === src);
 		hint.innerHTML = s && s.configured
-			? '<span class="pill ok">Configurado</span> Pronto para coletar.'
+			? '<span class="pill ok">Configurado</span> Ofertas carregadas automaticamente.'
 			: '<span class="pill no">Sem credenciais</span> Configure os secrets no Worker (README). A coleta manual segue funcionando.';
 	} catch (e) {
 		hint.textContent = e.message;
 	}
 }
 
-$("btn-collect").addEventListener("click", async () => {
+// Carrega automaticamente o feed selecionado da fonte escolhida.
+async function autoLoadFeed() {
 	const src = $("source").value;
+	if (src === "manual") return;
 	const keyword = $("src-keyword").value.trim();
 	const box = $("collect-results");
-	box.innerHTML = '<p class="hint">Coletando…</p>';
+	box.innerHTML = `<p class="hint">Carregando ${FEED_LABEL[currentFeed].toLowerCase()}…</p>`;
 	try {
-		const q = keyword ? `?keyword=${encodeURIComponent(keyword)}` : "";
-		const { offers } = await api(`/api/sources/${src}/offers${q}`);
-		if (!offers.length) { box.innerHTML = '<p class="hint">Nenhuma oferta retornada.</p>'; return; }
-		box.innerHTML = "";
-		offers.forEach((o) => {
-			const div = document.createElement("div");
-			div.className = "item";
-			div.innerHTML = `<strong>${escapeHtml(o.productName)}</strong>
-				<div class="meta"><span>R$ ${o.price}</span>${o.oldPrice ? `<span>de R$ ${o.oldPrice}</span>` : ""}<span>${o.platform}</span><span>${o.category || ""}</span></div>`;
-			const btn = document.createElement("button");
-			btn.className = "btn secondary";
-			btn.textContent = "Usar esta oferta";
-			btn.onclick = () => fillFormFromOffer(o);
-			div.appendChild(btn);
-			box.appendChild(div);
-		});
+		const params = new URLSearchParams({ feed: currentFeed });
+		if (keyword) params.set("keyword", keyword);
+		const { offers } = await api(`/api/sources/${src}/offers?${params}`);
+		renderFeed(offers, box);
 	} catch (e) {
-		box.innerHTML = `<p class="error">${escapeHtml(e.message)}</p>`;
+		box.innerHTML = `<p class="error">${escapeHtml(e.message)}</p><p class="hint">Sem credenciais da fonte? Use a opção Manual ou configure os secrets.</p>`;
 	}
-});
+}
+
+function renderFeed(offers, box) {
+	if (!offers.length) { box.innerHTML = '<p class="hint">Nenhuma oferta retornada.</p>'; return; }
+	const grid = document.createElement("div");
+	grid.className = "feedgrid";
+	offers.forEach((o) => {
+		const card = document.createElement("div");
+		card.className = "prod";
+		const badges = [];
+		if (o.offerType === "relampago") badges.push('<span class="pill ready">⚡ Relâmpago</span>');
+		if (o.freeShipping) badges.push('<span class="pill ok">🚚 Frete grátis</span>');
+		badges.push(`<span class="pill draft">${o.platform}</span>`);
+		card.innerHTML = `<div class="name">${escapeHtml(o.productName)}</div>
+			<div><span class="price">R$ ${fmt(o.price)}</span>${o.oldPrice ? `<span class="old">R$ ${fmt(o.oldPrice)}</span>` : ""}</div>
+			<div class="badges">${badges.join("")}</div>`;
+		const btn = document.createElement("button");
+		btn.className = "btn secondary";
+		btn.style.fontSize = "0.82rem";
+		btn.textContent = "Usar esta oferta";
+		btn.onclick = () => fillFormFromOffer(o);
+		card.appendChild(btn);
+		grid.appendChild(card);
+	});
+	box.innerHTML = "";
+	box.appendChild(grid);
+}
+function fmt(n) { return Number(n).toFixed(2).replace(".", ","); }
 
 function fillFormFromOffer(o) {
 	$("productName").value = o.productName || "";
@@ -371,7 +397,34 @@ $("btn-add-coupon").addEventListener("click", async () => {
 		$("coupon-error").textContent = e.message;
 	}
 });
-$("btn-refresh-coupons").addEventListener("click", loadCoupons);
+$("btn-refresh-coupons").addEventListener("click", () => { loadDailyCoupons(); loadCoupons(); });
+
+async function loadDailyCoupons() {
+	const box = $("daily-coupons");
+	box.innerHTML = '<p class="hint">Carregando…</p>';
+	try {
+		const platforms = [["shopee", "Shopee"], ["meli", "Mercado Livre"]];
+		const results = await Promise.all(platforms.map(([p]) => api(`/api/coupons/active?platform=${p}`).then((r) => r.coupon).catch(() => null)));
+		box.innerHTML = "";
+		platforms.forEach(([p, label], i) => {
+			const c = results[i];
+			const div = document.createElement("div");
+			div.className = "daily";
+			if (c && (c.code || c.offValue)) {
+				const val = c.code || `${c.offValue} OFF ${c.description || "TODAS AS LOJAS"}`;
+				div.innerHTML = `<div class="hint">${label}</div><div class="code">${escapeHtml(val)}</div>
+					<div class="meta">${c.isFlash ? `<span>⚡ até ${escapeHtml(c.validUntil || "hoje")}</span>` : ""}<span>via ${escapeHtml(c.source || "manual")}</span></div>`;
+				const btn = mkBtn("Copiar código", "secondary", () => copyText(c.code || val));
+				div.appendChild(btn);
+			} else {
+				div.innerHTML = `<div class="hint">${label}</div><div class="code" style="color:var(--muted)">—</div><div class="hint">Nenhum cupom ativo ainda.</div>`;
+			}
+			box.appendChild(div);
+		});
+	} catch (e) {
+		box.innerHTML = `<p class="error">${escapeHtml(e.message)}</p>`;
+	}
+}
 
 async function loadCoupons() {
 	const box = $("coupons-list");

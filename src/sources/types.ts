@@ -8,11 +8,21 @@
  */
 import type { Offer } from "../generator/types";
 
+/**
+ * Feed de curadoria da plataforma:
+ * - `principais`    → principais ofertas / destaques
+ * - `mais_vendidos` → mais vendidos
+ * - `relampago`     → ofertas relâmpago (maior desconto / por tempo limitado)
+ */
+export type OfferFeed = "principais" | "mais_vendidos" | "relampago";
+
 export interface FetchOffersParams {
 	/** Palavra-chave/categoria para filtrar (opcional). */
 	keyword?: string;
 	/** Quantidade máxima de ofertas. */
 	limit?: number;
+	/** Feed de curadoria. Padrão: "principais". */
+	feed?: OfferFeed;
 }
 
 export interface OfferSourceAdapter {
