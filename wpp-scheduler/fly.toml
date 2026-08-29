@@ -1,0 +1,24 @@
+# Configuração para o Fly.io (host sempre ligado, com volume persistente).
+# Passos: fly launch --no-deploy  →  fly volumes create wpp_data --size 1
+#         fly deploy  →  abra a URL e escaneie o QR.
+app = "wpp-scheduler"
+primary_region = "gru"   # São Paulo
+
+[build]
+
+[env]
+  DATA_DIR = "/data"
+  PORT = "8080"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  # Manter sempre ligado (essencial: se a máquina parar, o WhatsApp desconecta)
+  auto_stop_machines = false
+  auto_start_machines = true
+  min_machines_running = 1
+
+# Disco persistente: guarda a sessão do WhatsApp e a fila de mensagens
+[[mounts]]
+  source = "wpp_data"
+  destination = "/data"

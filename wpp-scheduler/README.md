@@ -53,21 +53,46 @@ vive no `auth/`.
 - **Linux:** rode como serviço `systemd` (roda no boot, sem login).
 - Em ambos, evite que a máquina durma.
 
-## Rodar num host sempre ligado (recomendado)
+## Rodar num host sempre ligado (RECOMENDADO — sem depender do seu PC)
 
-Assim você **nunca** depende do seu PC. Opções:
+Assim o serviço fica **24h no ar** e você **nunca** depende do seu computador.
 
-- **Railway / Render / Fly.io:** suba a pasta `wpp-scheduler`, comando de start
-  `npm start`. **Importante:** o disco precisa ser **persistente** (para manter a
-  pasta `auth/`), senão você teria que reescanear o QR a cada reinício. No Fly,
-  use um *volume*; no Railway, um *volume* montado. Evite planos "free" que
-  **dormem** (a conexão do WhatsApp cairia).
-- **VPS (ex.: R$ 20–30/mês):** `git clone`, `npm install`, e rode com `pm2`:
-  ```bash
-  npm i -g pm2
-  pm2 start src/server.js --name wpp-scheduler
-  pm2 startup && pm2 save    # inicia sozinho no boot
-  ```
+> ⚠️ Dois pontos que não podem faltar em qualquer host:
+> 1. **Disco persistente** montado em `/data` (variável `DATA_DIR=/data`) — é onde
+>    fica a sessão do WhatsApp (`auth/`). Sem isso, o QR pede rescan a cada deploy.
+> 2. **Não pode "dormir"** — evite planos free que hibernam (a conexão cai).
+
+### Opção A — Railway (mais fácil)
+
+1. Crie conta em railway.app e conecte o seu GitHub.
+2. **New Project → Deploy from GitHub repo** → selecione este repositório.
+3. Em Settings, aponte o **Root Directory** para `wpp-scheduler`.
+4. Em **Variables**, adicione `DATA_DIR=/data` (e `DASHBOARD_PASSWORD` se quiser senha).
+5. Em **Volumes**, crie um volume e monte em `/data`.
+6. Deploy → abra a URL pública → escaneie o QR. Pronto, roda sozinho.
+
+### Opção B — Fly.io (tem o `fly.toml` pronto)
+
+```bash
+cd wpp-scheduler
+fly launch --no-deploy          # usa o fly.toml já incluído
+fly volumes create wpp_data --size 1 --region gru
+fly deploy
+fly open                        # abra e escaneie o QR
+```
+
+### Opção C — VPS com Docker ou pm2
+
+```bash
+# Docker (usa o Dockerfile incluído; monte um volume em /data)
+docker build -t wpp-scheduler .
+docker run -d --restart=always -p 8080:8080 -v wpp_data:/data wpp-scheduler
+
+# ou sem Docker, com pm2 (inicia sozinho no boot)
+npm install && npm i -g pm2
+pm2 start src/server.js --name wpp-scheduler
+pm2 startup && pm2 save
+```
 
 ## Segurança
 

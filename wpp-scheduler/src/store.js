@@ -5,9 +5,12 @@
  * em qualquer host. Escrita atômica (grava em .tmp e renomeia).
  */
 import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync } from "node:fs";
-import { dirname } from "node:path";
+import { dirname, join } from "node:path";
 
-const FILE = new URL("../data/messages.json", import.meta.url).pathname;
+// DATA_DIR aponta para um disco persistente no host (volume). Assim a fila de
+// mensagens sobrevive a reinícios/deploys. Padrão: ./data dentro do projeto.
+const DATA_DIR = process.env.DATA_DIR || new URL("../data", import.meta.url).pathname;
+const FILE = join(DATA_DIR, "messages.json");
 
 function ensureDir() {
 	const dir = dirname(FILE);

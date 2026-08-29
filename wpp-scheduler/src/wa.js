@@ -12,9 +12,13 @@ import makeWASocket, {
 } from "@whiskeysockets/baileys";
 import QRCode from "qrcode";
 import pino from "pino";
+import { join } from "node:path";
 
 const logger = pino({ level: "silent" });
-const AUTH_DIR = new URL("../auth", import.meta.url).pathname;
+// A sessão do WhatsApp fica no disco persistente (DATA_DIR/auth), para
+// escanear o QR só uma vez, mesmo após reinícios/deploys.
+const DATA_DIR = process.env.DATA_DIR || new URL("..", import.meta.url).pathname;
+const AUTH_DIR = join(DATA_DIR, "auth");
 
 class WhatsApp {
 	constructor() {
