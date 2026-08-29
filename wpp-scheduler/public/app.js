@@ -1,0 +1,118 @@
+// Painel do agendador de WhatsApp.
+const $ = (id) => document.getElementById(id);
+let connected = false;
+let groupsLoaded = false;
+
+function toast(m) { const t = $("toast"); t.textContent = m; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 2200); }
+function esc(s) { return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+async function api(path, opts) {
+	const res = await fetch(path, { headers: { "content-type": "application/json" }, ...opts });
+	const data = await res.json().catch(() => ({}));
+	if (!res.ok) throw new Error(data.error || `Erro ${res.status}`);
+	return data;
+}
+
+// ---- Status / QR ----
+async function loadStatus() {
+	try {
+		const s = await api("/api/status");
+		connected = s.connected;
+		const box = $("status");
+		if (s.connected) {
+			box.innerHTML = `<span class="dot on"></span> <strong>Conectado</strong> ${s.me?.name ? "como " + esc(s.me.name) : ""}
+				<button class="btn ghost small" id="btn-logout">Desconectar</button>`;
+			$("btn-logout").onclick = async () => { if (confirm("Desconectar o WhatsApp?")) { await api("/api/logout", { method: "POST" }); groupsLoaded = false; loadStatus(); } };
+			if (!groupsLoaded) loadGroups();
+		} else if (s.qr) {
+			box.innerHTML = `<img class="qr" src="${s.qr}" alt="QR Code" />
+				<div><strong>Escaneie o QR</strong><div class="hint">No celular: WhatsApp → Aparelhos conectados → Conectar um aparelho.</div></div>`;
+		} else {
+			box.innerHTML = `<span class="dot off"></span> ${s.loggedOut ? "Sessão encerrada — gerando novo QR…" : "Iniciando conexão…"}`;
+		}
+	} catch (e) {
+		$("status").innerHTML = `<span class="hint">${esc(e.message)}</span>`;
+	}
+}
+
+async function loadGroups() {
+	try {
+		const { groups } = await api("/api/groups");
+		const sel = $("group");
+		if (!groups.length) { sel.innerHTML = '<option value="">Nenhum grupo encontrado</option>'; return; }
+		sel.innerHTML = groups.map((g) => `<option value="${esc(g.jid)}" data-name="${esc(g.name)}">${esc(g.name)}</option>`).join("");
+		groupsLoaded = true;
+	} catch (e) {
+		toast(e.message);
+	}
+}
+
+// ---- Agendar ----
+$("btn-schedule").addEventListener("click", async () => {
+	$("sched-msg").textContent = "";
+	try {
+		if (!connected) throw new Error("Conecte o WhatsApp primeiro.");
+		const sel = $("group");
+		const groupJid = sel.value;
+		const groupName = sel.selectedOptions[0]?.dataset.name || groupJid;
+		const text = $("text").value.trim();
+		const imageUrl = $("imageUrl").value.trim() || null;
+		const dt = $("scheduledAt").value;
+		if (!groupJid) throw new Error("Escolha o grupo.");
+		if (!text && !imageUrl) throw new Error("Escreva a mensagem.");
+		if (!dt) throw new Error("Escolha a data e hora.");
+		const scheduledAt = new Date(dt).getTime();
+		await api("/api/messages", { method: "POST", body: JSON.stringify({ text, imageUrl, groupJid, groupName, scheduledAt }) });
+		$("text").value = ""; $("imageUrl").value = ""; $("scheduledAt").value = "";
+		toast("Mensagem agendada! 📅");
+		loadList();
+	} catch (e) {
+		$("sched-msg").innerHTML = `<span style="color:var(--danger)">${esc(e.message)}</span>`;
+	}
+});
+
+// ---- Lista ----
+$("btn-refresh").addEventListener("click", loadList);
+async function loadList() {
+	const box = $("list");
+	try {
+		const { messages } = await api("/api/messages");
+		if (!messages.length) { box.innerHTML = '<div class="empty">📭 Nenhuma mensagem agendada.</div>'; return; }
+		box.innerHTML = "";
+		messages.forEach((m) => box.appendChild(renderMsg(m)));
+	} catch (e) {
+		box.innerHTML = `<p class="hint">${esc(e.message)}</p>`;
+	}
+}
+function renderMsg(m) {
+	const div = document.createElement("div");
+	div.className = "item";
+	const when = new Date(m.scheduledAt).toLocaleString("pt-BR");
+	div.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center">
+			<strong>${esc(m.groupName)}</strong>
+			<span class="pill ${m.status}">${statusLabel(m.status)}</span>
+		</div>
+		<div class="meta"><span>🕒 ${when}</span>${m.imageUrl ? "<span>🖼️ com imagem</span>" : ""}${m.error ? `<span style="color:var(--danger)">${esc(m.error)}</span>` : ""}</div>
+		<pre>${esc(m.text || "(somente imagem)")}</pre>`;
+	const actions = document.createElement("div");
+	actions.className = "actions";
+	if (m.status === "pending" || m.status === "failed") actions.appendChild(mkBtn("Enviar agora", "ghost small", () => sendNow(m.id)));
+	actions.appendChild(mkBtn("Excluir", "danger small", () => remove(m.id)));
+	div.appendChild(actions);
+	return div;
+}
+function mkBtn(label, cls, fn) { const b = document.createElement("button"); b.className = "btn " + cls; b.textContent = label; b.onclick = fn; return b; }
+function statusLabel(s) { return { pending: "Agendada", sent: "Enviada", failed: "Falhou", canceled: "Cancelada" }[s] || s; }
+async function sendNow(id) {
+	try { await api(`/api/messages/${id}/send-now`, { method: "POST" }); toast("Enviada!"); loadList(); }
+	catch (e) { toast(e.message); loadList(); }
+}
+async function remove(id) {
+	if (!confirm("Excluir esta mensagem?")) return;
+	await api(`/api/messages/${id}`, { method: "DELETE" });
+	toast("Excluída"); loadList();
+}
+
+// ---- Loop ----
+loadStatus(); loadList();
+setInterval(loadStatus, 3000);
+setInterval(loadList, 10000);

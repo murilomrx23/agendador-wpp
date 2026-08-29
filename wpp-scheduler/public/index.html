@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="pt-BR">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Agendador de WhatsApp</title>
+		<style>
+			:root {
+				--brand: #128c7e; --brand-dark: #075e54; --brand-2: #25d366;
+				--bg: #eef1f4; --panel: #fff; --ink: #0f1f28; --muted: #5b6b74; --line: #e3e8ec;
+				--danger: #d64541; --ok: #1a9d54; --warn: #c98a1a; --info: #2f6fed;
+				--shadow: 0 1px 3px rgba(16,32,40,.08), 0 6px 20px rgba(16,32,40,.06);
+			}
+			* { box-sizing: border-box; margin: 0; padding: 0; }
+			body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--ink); line-height: 1.5; }
+			header { background: linear-gradient(90deg, var(--brand-dark), var(--brand)); color: #fff; padding: 1rem 1.25rem; }
+			header h1 { font-size: 1.15rem; }
+			header p { font-size: .82rem; opacity: .85; }
+			.wrap { max-width: 860px; margin: 0 auto; padding: 1.25rem 1rem 3rem; }
+			.card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 1.25rem; margin-bottom: 1rem; box-shadow: var(--shadow); }
+			.card h2 { font-size: 1rem; margin-bottom: .8rem; }
+			label { display: block; font-size: .78rem; color: var(--muted); margin-bottom: .25rem; font-weight: 500; }
+			input, select, textarea { width: 100%; padding: .6rem .7rem; border: 1px solid var(--line); border-radius: 10px; font: inherit; background: #fff; color: var(--ink); }
+			input:focus, select:focus, textarea:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px rgba(18,140,126,.15); }
+			.field { margin-bottom: .8rem; }
+			.grid { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; }
+			button.btn { background: var(--brand); color: #fff; border: none; padding: .62rem 1.15rem; border-radius: 10px; font: inherit; font-weight: 600; cursor: pointer; }
+			button.btn:hover { background: var(--brand-dark); }
+			button.btn.ghost { background: transparent; color: var(--muted); border: 1px solid var(--line); font-weight: 500; }
+			button.btn.danger { background: #fff; color: var(--danger); border: 1px solid var(--danger); }
+			button.btn.small { padding: .35rem .7rem; font-size: .82rem; }
+			.actions { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .6rem; }
+			.status { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+			.qr { width: 220px; height: 220px; border-radius: 10px; border: 1px solid var(--line); }
+			.dot { width: .7rem; height: .7rem; border-radius: 50%; display: inline-block; }
+			.dot.on { background: var(--ok); } .dot.off { background: var(--danger); }
+			.pill { display: inline-block; font-size: .72rem; padding: .12rem .55rem; border-radius: 999px; font-weight: 600; }
+			.pill.pending { background: #e8f0fe; color: var(--info); }
+			.pill.sent { background: #e4f6ea; color: var(--ok); }
+			.pill.failed { background: #fdeaea; color: var(--danger); }
+			.item { border: 1px solid var(--line); border-radius: 12px; padding: .85rem; margin-bottom: .65rem; }
+			.item .meta { font-size: .8rem; color: var(--muted); display: flex; gap: .75rem; flex-wrap: wrap; margin: .35rem 0; }
+			.item pre { white-space: pre-wrap; word-break: break-word; font-family: inherit; font-size: .86rem; background: #f7f9fa; border-radius: 8px; padding: .55rem; }
+			.hint { font-size: .82rem; color: var(--muted); }
+			.empty { text-align: center; color: var(--muted); padding: 1.2rem; }
+			.toast { position: fixed; bottom: 1rem; left: 50%; transform: translateX(-50%); background: #0f1f28; color: #fff; padding: .6rem 1rem; border-radius: 8px; font-size: .85rem; opacity: 0; transition: opacity .2s; }
+			.toast.show { opacity: 1; }
+			.warn-box { background: #fdf3dd; border: 1px solid #f0d99a; color: #8a5e0a; border-radius: 10px; padding: .6rem .8rem; font-size: .82rem; margin-bottom: 1rem; }
+			@media (max-width: 640px) { .grid { grid-template-columns: 1fr; } }
+		</style>
+	</head>
+	<body>
+		<header>
+			<h1>📅 Agendador de WhatsApp</h1>
+			<p>Conecte o WhatsApp, agende as ofertas e o sistema dispara sozinho no seu grupo.</p>
+		</header>
+		<div class="wrap">
+			<div class="warn-box">⚠️ Use com moderação: número dedicado, poucos grupos e intervalos entre envios. Disparos em excesso podem levar a bloqueio do número pelo WhatsApp.</div>
+
+			<div class="card">
+				<h2>1. Conexão do WhatsApp</h2>
+				<div class="status" id="status"><span class="hint">Carregando…</span></div>
+			</div>
+
+			<div class="card" id="schedule-card">
+				<h2>2. Agendar mensagem</h2>
+				<div class="field">
+					<label>Grupo de destino</label>
+					<select id="group"><option value="">Conecte o WhatsApp para carregar os grupos</option></select>
+				</div>
+				<div class="field">
+					<label>Mensagem (a oferta pronta — aceita *negrito* do WhatsApp)</label>
+					<textarea id="text" rows="6" placeholder="Cole aqui a oferta pronta para o grupo…"></textarea>
+				</div>
+				<div class="grid">
+					<div class="field"><label>Imagem (URL, opcional)</label><input id="imageUrl" placeholder="https://…/foto.jpg" /></div>
+					<div class="field"><label>Data e hora do disparo</label><input id="scheduledAt" type="datetime-local" /></div>
+				</div>
+				<div class="actions"><button type="button" class="btn" id="btn-schedule">📅 Agendar disparo</button></div>
+				<div class="hint" id="sched-msg"></div>
+			</div>
+
+			<div class="card">
+				<h2>3. Mensagens agendadas</h2>
+				<div class="actions" style="margin-bottom:.7rem"><button type="button" class="btn ghost small" id="btn-refresh">Atualizar</button></div>
+				<div id="list"><p class="hint">Carregando…</p></div>
+			</div>
+		</div>
+		<div class="toast" id="toast"></div>
+		<script src="app.js"></script>
+	</body>
+</html>
