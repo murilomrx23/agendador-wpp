@@ -13,6 +13,7 @@ import makeWASocket, {
 import QRCode from "qrcode";
 import pino from "pino";
 import { join } from "node:path";
+import { rm } from "node:fs/promises";
 
 const logger = pino({ level: "silent" });
 // A sessão do WhatsApp fica no disco persistente (DATA_DIR/auth), para
@@ -115,7 +116,7 @@ class WhatsApp {
 		}
 	}
 
-	/** Encerra a sessão (logout) — apaga a necessidade de reusar o número. */
+	/** Encerra a sessão (logout) e já reabre uma conexão nova para gerar outro QR. */
 	async logout() {
 		try {
 			await this.sock?.logout();
@@ -125,6 +126,13 @@ class WhatsApp {
 		this.connected = false;
 		this.me = null;
 		this.loggedOut = true;
+		this.qrDataUrl = null;
+		this.sock = null;
+		// Limpa as credenciais antigas (senão o Baileys tenta reusar a sessão já
+		// invalidada e nunca chega a pedir um QR novo).
+		await rm(AUTH_DIR, { recursive: true, force: true }).catch(() => {});
+		this.starting = false;
+		this.start().catch(console.error);
 	}
 }
 
