@@ -64,10 +64,16 @@ class WhatsApp {
 				this.connected = false;
 				const code = lastDisconnect?.error?.output?.statusCode;
 				if (code === DisconnectReason.loggedOut) {
-					// Sessão encerrada: precisa escanear o QR de novo.
+					// Sessão encerrada (pelo painel, pelo celular, ou porque a sessão
+					// salva já estava inválida): limpa as credenciais antigas e reinicia
+					// para gerar um QR novo automaticamente, em vez de ficar travado.
 					this.loggedOut = true;
 					this.me = null;
-					console.warn("⚠️ WhatsApp deslogado — escaneie o QR novamente.");
+					this.qrDataUrl = null;
+					console.warn("⚠️ WhatsApp deslogado — gerando novo QR…");
+					this.starting = false;
+					await rm(AUTH_DIR, { recursive: true, force: true }).catch(() => {});
+					setTimeout(() => this.start().catch(console.error), 1000);
 				} else {
 					console.warn("🔄 Conexão caiu, reconectando…", code);
 					this.starting = false;
@@ -137,4 +143,3 @@ class WhatsApp {
 }
 
 export const wa = new WhatsApp();
-
